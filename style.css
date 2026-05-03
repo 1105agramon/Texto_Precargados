@@ -71,10 +71,43 @@ header {
     color: var(--text-muted);
 }
 
+/* Asegura que el contenedor sea el punto de referencia */
 .search-box {
     position: relative;
     width: 100%;
+    display: flex;
+    align-items: center;
 }
+
+/* Estilo para que el botón flote a la derecha dentro del input */
+.clear-btn {
+    position: absolute;
+    right: 14px; /* Espacio desde el borde derecho */
+    background: #334155; /* Color circular oscuro */
+    color: #f1f5f9;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: none; /* Se muestra vía JS solo cuando hay texto */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    z-index: 5;
+}
+
+.clear-btn:hover {
+    background-color: #ef4444; /* Rojo al pasar el mouse */
+    color: white;
+}
+
+/* Ajuste al input para que el texto no se encime con la X */
+.search-box input {
+    padding-right: 45px; /* Espacio extra a la derecha para la X */
+}
+
 
 .search-icon {
     position: absolute;
