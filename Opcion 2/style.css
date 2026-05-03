@@ -41,10 +41,9 @@ body {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
     border: 1px solid var(--border-color);
     
-    /* ¡NUEVO! Magia para que ocupe todo el largo */
-    display: flexbox;
+    display: flex;
     flex-direction: column;
-    height: calc(90vh - 30px); /* 100vh es el 100% de la pantalla, le restamos el padding del body */
+    height: calc(100vh - 60px); /* Ajuste para ocupar toda la pantalla considerando el padding del body */
 }
 
 /* ==========================================================
@@ -69,6 +68,67 @@ header {
     margin: 4px 0 0 0;
     font-size: 15px;
     color: var(--text-muted);
+}
+
+/* Estilo para el botón de acceso a WhatsApp en el Index */
+.whatsapp-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    background-color: #25d366; /* Verde WhatsApp */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    width: fit-content;
+}
+
+.whatsapp-nav-btn:hover {
+    background-color: #128c7e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+/* Asegura que el contenedor sea el punto de referencia */
+.search-box {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Estilo para que el botón flote a la derecha dentro del input */
+.clear-btn {
+    position: absolute;
+    right: 14px; /* Espacio desde el borde derecho */
+    background: #334155; /* Color circular oscuro */
+    color: #f1f5f9;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: none; /* Se muestra vía JS solo cuando hay texto */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    z-index: 5;
+}
+
+.clear-btn:hover {
+    background-color: #ef4444; /* Rojo al pasar el mouse */
+    color: white;
+}
+
+/* Ajuste al input para que el texto no se encime con la X */
+.search-box input {
+    padding-right: 45px; /* Espacio extra a la derecha para la X */
 }
 
 .search-box {
@@ -109,11 +169,72 @@ header {
 }
 
 /* ==========================================================
+   ESTILOS DE LAS PESTAÑAS (TABS)
+   ========================================================== */
+.tabs-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+    
+    /* Scroll suave en móviles */
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-btn {
+    background-color: var(--surface-color);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-main);
+}
+
+/* Estado activo de la pestaña */
+.tab-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Scrollbar específico para la barra de pestañas */
+.tabs-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.tabs-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tabs-container::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 10px;
+}
+
+.tabs-container::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-hover);
+}
+
+/* ==========================================================
    CONTENEDOR Y DISEÑO DE LA TABLA
    ========================================================== */
 .table-container {
+    overflow-y: auto;
     overflow-x: auto;
-    max-height: 60vh;
+    flex-grow: 1; /* Permite que la tabla llene el espacio sobrante */
     border-radius: 8px;
     border: 1px solid var(--border-color);
     background-color: var(--surface-color);
@@ -123,7 +244,7 @@ table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    min-width: 5px; /* Evita que la tabla colapse, el zoom hará el resto */
+    min-width: 800px; /* Evita que la tabla colapse demasiado en pantallas pequeñas */
 }
 
 thead th {
@@ -175,11 +296,10 @@ tbody td:nth-child(6) { /* Botón */
 /* TEXTO DE RESPUESTA: Toma el espacio restante y se limita a 3 líneas */
 .text-col {
     width: 100%;
-    /* Eliminamos el min-width: 350px para que ceda el espacio necesario */
     line-height: 1.6;
     white-space: pre-wrap;
     
-    /* Magia para limitar a 3 líneas */
+    /* Magia para limitar a 3 líneas y truncar con puntos suspensivos */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -188,12 +308,11 @@ tbody td:nth-child(6) { /* Botón */
 
 /* SUBTEMA: Ancho fijo y límite de 3 líneas */
 tbody td:nth-child(2) {
-    width: 170px; /* Tamaño fijo de la columna (puedes ajustarlo) */
-    min-width: 150px; /* Evita que se aplaste demasiado en pantallas pequeñas */
-    white-space: normal; /* Le da permiso de bajar al siguiente renglón */
+    width: 170px; 
+    min-width: 150px; 
+    white-space: normal; 
     word-wrap: break-word;
     
-    /* Magia para limitar a 3 líneas */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -206,46 +325,15 @@ tbody td:nth-child(5) {
     color: var(--primary-hover);
     font-size: 13px;
     font-family: 'ui-monospace', 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
-    text-align: center; /* ¡Esta es la línea que centra el contenido! */
+    text-align: center;
 }
 
 .center-col {
     text-align: center;
 }
 
-
-/* Estilo para el botón de limpiar */
-.clear-btn {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #334155;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    display: none; /* Se oculta por defecto */
-    font-size: 18px;
-    line-height: 1;
-    transition: all 0.2s ease;
-    padding: 0;
-}
-
-.clear-btn:hover {
-    background: var(--primary-color);
-    transform: translateY(-50%) scale(1.1);
-}
-
-/* Ajuste al input para que el texto no choque con el botón */
-.search-box input {
-    padding-right: 45px; 
-}
-
 /* ==========================================================
-BOTONES Y ANIMACIONES
+   BOTONES Y ANIMACIONES
    ========================================================== */
 button.copy-btn {
     background-color: transparent;
@@ -307,7 +395,7 @@ button.copy-btn.copied {
 }
 
 /* ==========================================================
-   SCROLLBAR (Estética Oscura)
+   SCROLLBAR (Estética Oscura de la Tabla)
    ========================================================== */
 .table-container::-webkit-scrollbar {
     width: 8px;

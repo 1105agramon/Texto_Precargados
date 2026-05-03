@@ -10,6 +10,10 @@ let datosGlobales = []; // Aquí guardaremos los datos descargados
 const tableBody = document.getElementById('tableBody');
 const searchInput = document.getElementById('searchInput');
 
+// Referencia al botón nuevo
+const clearBtn = document.getElementById('clearSearch');
+
+
 // 2. FUNCIÓN PARA OBTENER LOS DATOS
 async function cargarDatos() {
     try {
@@ -115,8 +119,11 @@ async function copiarDesdeFila(fila) {
 // 4. LÓGICA DEL BUSCADOR (FILTRO)
 searchInput.addEventListener('input', function(e) {
     const terminoBusqueda = e.target.value.toLowerCase();
+    
+    // Mostrar/Ocultar botón de limpiar
+    clearBtn.style.display = terminoBusqueda.length > 0 ? 'block' : 'none';
 
-    // Filtra si el término coincide con Tema, Subtema o Categoría
+    // Filtra incluyendo el Texto de Respuesta (item.texto)
     const datosFiltrados = datosGlobales.filter(item => {
         return item.tema.toLowerCase().includes(terminoBusqueda) ||
                item.subtema.toLowerCase().includes(terminoBusqueda) ||
@@ -124,6 +131,14 @@ searchInput.addEventListener('input', function(e) {
     });
 
     renderizarTabla(datosFiltrados);
+});
+
+// FUNCIÓN PARA LIMPIAR
+clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    clearBtn.style.display = 'none';
+    renderizarTabla(datosGlobales); // Restaurar tabla original
+    searchInput.focus();
 });
 
 // 5. FUNCIÓN DE COPIADO
