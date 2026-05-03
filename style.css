@@ -40,44 +40,13 @@ body {
     border-radius: 12px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
     border: 1px solid var(--border-color);
-    
-    /* ¡NUEVO! Magia para que ocupe todo el largo */
-    display: flexbox;
+    display: flex;
     flex-direction: column;
-    height: calc(90vh - 30px); /* 100vh es el 100% de la pantalla, le restamos el padding del body */
-}
-
-
-.btn-inicio {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 45px;
-    height: 45px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none; /* Se ocultará por defecto */
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    z-index: 100;
-    transition: all 0.3s ease;
-}
-
-.btn-inicio:hover {
-    background-color: var(--primary-hover);
-    transform: scale(1.1);
-}
-
-.btn-inicio.show {
-    display: flex; /* Clase para mostrarlo mediante JS */
+    height: calc(90vh - 30px);
 }
 
 /* ==========================================================
-   CABECERA Y BUSCADOR
+   CABECERA
    ========================================================== */
 header {
     display: flex;
@@ -100,43 +69,22 @@ header {
     color: var(--text-muted);
 }
 
-/* Asegura que el contenedor sea el punto de referencia */
+/* ==========================================================
+   ESTRUCTURA DE CONTROLES (Buscador + Folio)
+   ========================================================== */
+.controls-container {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 12px;
+    width: 100%;
+}
+
+/* 1. Caja del buscador principal */
 .search-box {
     position: relative;
-    width: 100%;
-    display: flex;
-    align-items: center;
+    flex-grow: 1; 
+    min-width: 250px; 
 }
-
-/* Estilo para que el botón flote a la derecha dentro del input */
-.clear-btn {
-    position: absolute;
-    right: 14px; /* Espacio desde el borde derecho */
-    background: #334155; /* Color circular oscuro */
-    color: #f1f5f9;
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: none; /* Se muestra vía JS solo cuando hay texto */
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 18px;
-    transition: all 0.2s ease;
-    z-index: 5;
-}
-
-.clear-btn:hover {
-    background-color: #ef4444; /* Rojo al pasar el mouse */
-    color: white;
-}
-
-/* Ajuste al input para que el texto no se encime con la X */
-.search-box input {
-    padding-right: 45px; /* Espacio extra a la derecha para la X */
-}
-
 
 .search-icon {
     position: absolute;
@@ -148,7 +96,7 @@ header {
 
 .search-box input {
     width: 100%;
-    padding: 14px 14px 14px 44px;
+    padding: 14px 45px 14px 44px; 
     font-size: 16px;
     font-family: inherit;
     color: var(--text-main);
@@ -162,12 +110,88 @@ header {
 .search-box input:focus {
     outline: none;
     border-color: var(--primary-color);
-    background-color: var(--input-bg);
     box-shadow: 0 0 0 4px var(--ring-color);
 }
 
 .search-box input::placeholder {
     color: #4b5563;
+}
+
+.clear-btn {
+    position: absolute;
+    right: 14px; 
+    top: 50%;
+    transform: translateY(-50%);
+    background: #334155; 
+    color: #f1f5f9;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    z-index: 5;
+    padding: 0;
+    line-height: 1;
+}
+
+.clear-btn:hover {
+    background-color: #ef4444; 
+    color: white;
+}
+
+/* 2. Caja para mantener juntos el folio y su botón */
+.folio-box {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0; 
+}
+
+.folio-field {
+    width: 140px; 
+    padding: 14px;
+    font-size: 16px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.folio-field:focus {
+    outline: none;
+    border-color: var(--success-color); 
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+}
+
+.copy-folio-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-folio-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.copy-folio-btn.copied {
+    background-color: var(--success-color);
 }
 
 /* ==========================================================
@@ -185,7 +209,7 @@ table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    min-width: 5px; /* Evita que la tabla colapse, el zoom hará el resto */
+    min-width: 5px; 
 }
 
 thead th {
@@ -211,7 +235,6 @@ tbody td {
     color: #e2e8f0;
 }
 
-/* Efecto cebra y hover */
 tbody tr:nth-child(even) {
     background-color: #232f42;
 }
@@ -224,90 +247,49 @@ tbody tr:hover {
 /* ==========================================================
    CONFIGURACIÓN ESPECÍFICA DE COLUMNAS
    ========================================================== */
-
-/* PROTECCIÓN: Evitamos que las columnas cortas se partan a la mitad */
-tbody td:nth-child(1), /* Tema */
-tbody td:nth-child(2), /* Subtema */
-tbody td:nth-child(3), /* Categoría */
-tbody td:nth-child(5), /* Hashtag */
-tbody td:nth-child(6) { /* Botón */
+tbody td:nth-child(1),
+tbody td:nth-child(2), 
+tbody td:nth-child(3), 
+tbody td:nth-child(5), 
+tbody td:nth-child(6) { 
     white-space: nowrap;
 }
 
-/* TEXTO DE RESPUESTA: Toma el espacio restante y se limita a 3 líneas */
 .text-col {
     width: 100%;
-    /* Eliminamos el min-width: 350px para que ceda el espacio necesario */
     line-height: 1.6;
     white-space: pre-wrap;
-    
-    /* Magia para limitar a 3 líneas */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* SUBTEMA: Ancho fijo y límite de 3 líneas */
 tbody td:nth-child(2) {
-    width: 170px; /* Tamaño fijo de la columna (puedes ajustarlo) */
-    min-width: 150px; /* Evita que se aplaste demasiado en pantallas pequeñas */
-    white-space: normal; /* Le da permiso de bajar al siguiente renglón */
+    width: 170px; 
+    min-width: 150px; 
+    white-space: normal; 
     word-wrap: break-word;
-    
-    /* Magia para limitar a 3 líneas */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* Columna de hashtags (Estilo código/etiqueta) */
 tbody td:nth-child(5) {
     font-weight: 600;
     color: var(--primary-hover);
     font-size: 13px;
     font-family: 'ui-monospace', 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
-    text-align: center; /* ¡Esta es la línea que centra el contenido! */
+    text-align: center; 
 }
 
 .center-col {
     text-align: center;
 }
 
-
-/* Estilo para el botón de limpiar */
-.clear-btn {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #334155;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    display: none; /* Se oculta por defecto */
-    font-size: 18px;
-    line-height: 1;
-    transition: all 0.2s ease;
-    padding: 0;
-}
-
-.clear-btn:hover {
-    background: var(--primary-color);
-    transform: translateY(-50%) scale(1.1);
-}
-
-/* Ajuste al input para que el texto no choque con el botón */
-.search-box input {
-    padding-right: 45px; 
-}
-
 /* ==========================================================
-BOTONES Y ANIMACIONES
+   BOTONES DE TABLA Y FLOTANTES
    ========================================================== */
 button.copy-btn {
     background-color: transparent;
@@ -345,7 +327,37 @@ button.copy-btn.copied {
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Loader */
+.btn-inicio {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.btn-inicio:hover {
+    background-color: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+.btn-inicio.show {
+    display: flex; 
+}
+
+/* ==========================================================
+   CARGADOR (Loader)
+   ========================================================== */
 .loading {
     text-align: center;
     color: var(--text-muted);
@@ -391,45 +403,13 @@ button.copy-btn.copied {
 }
 
 /* ==========================================================
-   RESPONSIVE DESIGN (Efecto Zoom Dinámico)
+   TOGGLE TEMA (Modo Claro/Oscuro)
    ========================================================== */
-@media (max-width: 1000px) {
-    .table-container {
-        zoom: 0.9;
-    }
-}
-
-@media (max-width: 850px) {
-    .table-container {
-        zoom: 0.8;
-    }
-    .container {
-        padding: 20px;
-    }
-}
-
-@media (max-width: 650px) {
-    .table-container {
-        zoom: 0.65;
-    }
-}
-
-@media (max-width: 450px) {
-    .table-container {
-        zoom: 0.6;
-    }
-    .header-titles h1 {
-        font-size: 20px;
-    }
-}
-
-
-/* Estilos para el botón de cambio */
 .theme-btn {
     background: var(--primary-color);
     color: rgb(177, 175, 175);
     border: none;
-    border-radius: 20px; /* Estilo más redondeado tipo pastilla */
+    border-radius: 20px; 
     padding: 6px 16px;
     cursor: pointer;
     margin-top: 10px;
@@ -448,38 +428,33 @@ button.copy-btn.copied {
     transform: translateY(-1px);
 }
 
-/* Variables para el MODO CLARO - Con más color y contraste */
 body.light-mode {
-    --bg-color: #c7d7ec;       /* Un gris azulado más profundo para el fondo */
-    --surface-color: #ffffffbb;  /* El contenedor principal sigue blanco para legibilidad */
-    --surface-hover: #ffe9c1;  /* Azul muy claro al pasar el mouse (Blue 100) */
-    
-    --text-main: #0f172a;      /* Texto casi negro para máximo contraste */
-    --text-muted: #475569;     /* Gris azulado para texto secundario */
-    
-    --border-color: #cbd5e1;   /* Bordes más definidos */
-    --input-bg: #f1f5f9;       /* Input con un ligero tono gris para que resalte del fondo blanco */
-    
-    --header-bg: #1e293b;      /* Podemos mantener el header oscuro para un look "Híbrido" elegante */
+    --bg-color: #c7d7ec;       
+    --surface-color: #ffffffbb;  
+    --surface-hover: #ffe9c1;  
+    --text-main: #0f172a;      
+    --text-muted: #475569;     
+    --border-color: #cbd5e1;   
+    --input-bg: #f1f5f9;       
+    --header-bg: #1e293b;      
 }
 
-/* Ajustes específicos para que la tabla tenga vida en modo claro */
 body.light-mode .container {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 body.light-mode thead th {
-    background-color: #11ca64; /* Encabezado de tabla azul (Color Primario) */
-    color: #ffffff;            /* Texto blanco en el encabezado */
+    background-color: #11ca64; 
+    color: #ffffff;            
     border-bottom: 3px solid #25eb9f;
 }
 
 body.light-mode tbody tr:nth-child(even) {
-    background-color: #f8fafc; /* Color cebra muy sutil */
+    background-color: #f8fafc; 
 }
 
 body.light-mode tbody tr:hover {
-    background-color: var(--surface-hover); /* Resaltado azul claro al pasar el mouse */
+    background-color: var(--surface-hover); 
 }
 
 body.light-mode tbody td {
@@ -487,8 +462,39 @@ body.light-mode tbody td {
     border-bottom: 1px solid #e2e8f0;
 }
 
-/* El botón de copiar en modo claro */
 body.light-mode button.copy-btn:hover {
     background-color: #3b82f6;
     color: white;
+}
+
+/* ==========================================================
+   RESPONSIVE DESIGN 
+   ========================================================== */
+@media (max-width: 1000px) {
+    .table-container { zoom: 0.9; }
+}
+
+@media (max-width: 850px) {
+    .table-container { zoom: 0.8; }
+    .container { padding: 20px; }
+}
+
+@media (max-width: 650px) {
+    .table-container { zoom: 0.65; }
+    
+    /* Adaptación del bloque de controles para móviles */
+    .folio-box {
+        width: 100%; 
+    }
+    .folio-field {
+        flex-grow: 1; 
+    }
+    .copy-folio-btn {
+        flex-grow: 1; 
+    }
+}
+
+@media (max-width: 450px) {
+    .table-container { zoom: 0.6; }
+    .header-titles h1 { font-size: 20px; }
 }

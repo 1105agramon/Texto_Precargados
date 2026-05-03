@@ -19,15 +19,28 @@
                 <button id="themeToggle" class="theme-btn"> <span class="icon">🌙</span> </button>
 
             </div>
-            <div class="search-box">
-                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="searchInput" placeholder="Buscar por tema, subtema O categoría">
-                <!-- Nuevo botón de limpiar -->
-                <button id="clearSearch" class="clear-btn" title="Limpiar búsqueda">&times;</button>
-                <button id="btnInicio" class="btn-inicio" title="Volver al inicio">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
-                </button>
+            <!-- Contenedor principal agrupado -->
+            <div class="controls-container">
+                
+                <!-- 1. Caja del buscador (con su lupa y botón limpiar) -->
+                <div class="search-box">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="searchInput" placeholder="Buscar por tema, subtema o categoría">
+                    <button id="clearSearch" class="clear-btn" title="Limpiar búsqueda">&times;</button>
+                </div>
+
+                <!-- 2. Caja del Folio (Folio + Botón de copiar) -->
+                <div class="folio-box">
+                    <input type="text" id="folioInput" placeholder="Folio" class="folio-field">
+                    <button id="btnCopiarFolio" class="copy-folio-btn">Copiar</button>
+                </div>
+
             </div>
+
+            <!-- El botón de inicio va suelto, puede ir aquí justo antes de cerrar el </header> -->
+            <button id="btnInicio" class="btn-inicio" title="Volver al inicio">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+            </button>
         </header>
 
         <div class="table-container">

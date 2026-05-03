@@ -10,6 +10,16 @@ let datosGlobales = []; // Aquí guardaremos los datos descargados
 const tableBody = document.getElementById('tableBody');
 const searchInput = document.getElementById('searchInput');
 
+// Variable con tu mensaje fijo (puedes editarla aquí cuando quieras)
+const MENSAJE_LLAVE = `Es necesario que nos envíe un correo a chat.locatel@cdmx.gob.mx con la siguiente documentación en formato PDF: 
+1.- Identificación oficial vigente (INE, pasaporte, cédula profesional, cartilla del servicio militar, en caso de extranjeros FM2 o FM3). Preferentemente INE por ambos lados 
+2.- Una fotografía del titular de la cuenta Llave CDMX donde sostenga la identificación oficial. (Selfie)  
+
+IMPORTANTE: En el ASUNTO del correo deberá colocar el siguiente folio: CHAT-0000-000, mismo que tiene una vigencia de 72 horas. En el CUERPO del correo deberá describir brevemente la complicación que está presentando agregando número telefónico de contacto. La información deberá ser enviada desde una cuenta de correo electrónico a la que tenga acceso en todo momento.`;
+
+const btnCopiarFolio = document.getElementById('btnCopiarFolio');
+const campoFolioHeader = document.getElementById('folioInput');
+
 
 const btnInicio = document.getElementById('btnInicio');
 const contenedorTabla = document.querySelector('.table-container');
@@ -95,6 +105,7 @@ async function cargarDatos() {
             datosGlobales.shift(); 
         }
 
+
         renderizarTabla(datosGlobales);
 
     } catch (error) {
@@ -139,9 +150,19 @@ async function copiarDesdeFila(fila) {
     try {
         // Buscamos el botón dentro de la fila que acabas de hacer clic
         const boton = fila.querySelector('.copy-btn');
-        const textoExtraido = decodeURIComponent(boton.getAttribute('data-texto'));
+        let textoExtraido = decodeURIComponent(boton.getAttribute('data-texto'));
         
-        // Copiamos al portapapeles
+        // --- LÓGICA DE SUSTITUCIÓN DEL FOLIO ---
+        const campoFolio = document.getElementById('folioInput');
+        const valorFolio = campoFolio ? campoFolio.value.trim() : "";
+
+        // Si el texto tiene el comodín y hay un folio escrito, lo reemplazamos
+        if (textoExtraido.includes("0000-000") && valorFolio !== "") {
+            textoExtraido = textoExtraido.replace(/0000-000/g, valorFolio);
+        }
+        // ---------------------------------------
+        
+        // Copiamos al portapapeles el texto ya procesado
         await navigator.clipboard.writeText(textoExtraido);
         
         // Efecto visual en el botón
@@ -149,7 +170,7 @@ async function copiarDesdeFila(fila) {
         boton.innerText = "¡Copiado!";
         boton.classList.add('copied');
         
-        // Opcional: Iluminamos la fila entera de verde por un segundo
+        // Efecto visual iluminando la fila entera
         fila.style.backgroundColor = "rgba(16, 185, 129, 0.1)"; 
         
         setTimeout(() => {
@@ -159,7 +180,7 @@ async function copiarDesdeFila(fila) {
         }, 1500);
         
     } catch (err) {
-        console.error('Error al copiar: ', err);
+        console.error('Error al copiar desde fila: ', err);
         alert("Tu navegador bloqueó el copiado automático.");
     }
 }
@@ -192,8 +213,17 @@ clearBtn.addEventListener('click', () => {
 // 5. FUNCIÓN DE COPIADO
 async function copiarAlPortapapeles(boton) {
     try {
-        // Desencriptamos el texto del botón al momento de copiar
-        const textoExtraido = decodeURIComponent(boton.getAttribute('data-texto'));
+        let textoExtraido = decodeURIComponent(boton.getAttribute('data-texto'));
+        
+        // Obtenemos el valor del cuadro de FOLIO específicamente
+        const campoFolio = document.getElementById('folioInput');
+        const valorFolio = campoFolio ? campoFolio.value.trim() : "";
+
+        // Si el texto tiene el comodín y el usuario escribió un folio, lo reemplazamos
+        if (textoExtraido.includes("0000-000") && valorFolio !== "") {
+            // Usamos una expresión regular para cambiar todas las apariciones
+            textoExtraido = textoExtraido.replace(/0000-000/g, valorFolio);
+        }
         
         await navigator.clipboard.writeText(textoExtraido);
         
@@ -207,9 +237,41 @@ async function copiarAlPortapapeles(boton) {
         }, 1500);
     } catch (err) {
         console.error('Error al copiar: ', err);
-        alert("Tu navegador bloqueó el copiado automático.");
     }
 }
+
+btnCopiarFolio.addEventListener('click', async () => {
+    try {
+        // 1. Tomamos el mensaje base que ya tenemos definido arriba
+        let textoFinal = MENSAJE_LLAVE;
+        
+        // 2. Leemos lo que escribiste en el input
+        const valorFolio = campoFolioHeader.value.trim();
+
+        // 3. Si escribiste algo, hacemos el reemplazo
+        if (valorFolio !== "") {
+            textoFinal = textoFinal.replace(/0000-000/g, valorFolio);
+        }
+
+        // 4. Copiamos al portapapeles
+        await navigator.clipboard.writeText(textoFinal);
+
+        // 5. Efecto visual de éxito en el botón
+        const textoOriginal = btnCopiarFolio.innerText;
+        btnCopiarFolio.innerText = "¡Copiado!";
+        btnCopiarFolio.classList.add('copied');
+
+        setTimeout(() => {
+            btnCopiarFolio.innerText = textoOriginal;
+            btnCopiarFolio.classList.remove('copied');
+        }, 1500);
+
+    } catch (err) {
+        console.error('Error al copiar el mensaje Llave desde el header: ', err);
+        alert("Tu navegador bloqueó el copiado automático.");
+    }
+});
+
 
 // Iniciar la carga al abrir la página
 cargarDatos();
