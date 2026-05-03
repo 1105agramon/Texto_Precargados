@@ -47,6 +47,35 @@ body {
     height: calc(90vh - 30px); /* 100vh es el 100% de la pantalla, le restamos el padding del body */
 }
 
+
+.btn-inicio {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none; /* Se ocultará por defecto */
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.btn-inicio:hover {
+    background-color: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+.btn-inicio.show {
+    display: flex; /* Clase para mostrarlo mediante JS */
+}
+
 /* ==========================================================
    CABECERA Y BUSCADOR
    ========================================================== */
@@ -146,7 +175,7 @@ header {
    ========================================================== */
 .table-container {
     overflow-x: auto;
-    max-height: 60vh;
+    max-height: 55vh;
     border-radius: 8px;
     border: 1px solid var(--border-color);
     background-color: var(--surface-color);
@@ -392,4 +421,74 @@ button.copy-btn.copied {
     .header-titles h1 {
         font-size: 20px;
     }
+}
+
+
+/* Estilos para el botón de cambio */
+.theme-btn {
+    background: var(--primary-color);
+    color: rgb(177, 175, 175);
+    border: none;
+    border-radius: 20px; /* Estilo más redondeado tipo pastilla */
+    padding: 6px 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.theme-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* Variables para el MODO CLARO - Con más color y contraste */
+body.light-mode {
+    --bg-color: #c7d7ec;       /* Un gris azulado más profundo para el fondo */
+    --surface-color: #ffffffbb;  /* El contenedor principal sigue blanco para legibilidad */
+    --surface-hover: #ffe9c1;  /* Azul muy claro al pasar el mouse (Blue 100) */
+    
+    --text-main: #0f172a;      /* Texto casi negro para máximo contraste */
+    --text-muted: #475569;     /* Gris azulado para texto secundario */
+    
+    --border-color: #cbd5e1;   /* Bordes más definidos */
+    --input-bg: #f1f5f9;       /* Input con un ligero tono gris para que resalte del fondo blanco */
+    
+    --header-bg: #1e293b;      /* Podemos mantener el header oscuro para un look "Híbrido" elegante */
+}
+
+/* Ajustes específicos para que la tabla tenga vida en modo claro */
+body.light-mode .container {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode thead th {
+    background-color: #11ca64; /* Encabezado de tabla azul (Color Primario) */
+    color: #ffffff;            /* Texto blanco en el encabezado */
+    border-bottom: 3px solid #25eb9f;
+}
+
+body.light-mode tbody tr:nth-child(even) {
+    background-color: #f8fafc; /* Color cebra muy sutil */
+}
+
+body.light-mode tbody tr:hover {
+    background-color: var(--surface-hover); /* Resaltado azul claro al pasar el mouse */
+}
+
+body.light-mode tbody td {
+    color: #1e293b;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* El botón de copiar en modo claro */
+body.light-mode button.copy-btn:hover {
+    background-color: #3b82f6;
+    color: white;
 }

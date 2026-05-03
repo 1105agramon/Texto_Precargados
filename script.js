@@ -10,8 +10,56 @@ let datosGlobales = []; // Aquí guardaremos los datos descargados
 const tableBody = document.getElementById('tableBody');
 const searchInput = document.getElementById('searchInput');
 
-// Referencia al botón nuevo
+
+const btnInicio = document.getElementById('btnInicio');
+const contenedorTabla = document.querySelector('.table-container');
+
+// Referencia al botón limpiar
 const clearBtn = document.getElementById('clearSearch');
+
+//Modo claro
+const themeToggle = document.getElementById('themeToggle');
+const body = document.body;
+const icon = themeToggle.querySelector('.icon');
+
+
+// Al cargar, revisar si ya tenía una preferencia guardada
+if (localStorage.getItem('theme') === 'light') {
+    body.classList.add('light-mode');
+    icon.innerText = '☀️';
+}
+
+themeToggle.addEventListener('click', () => {
+    body.classList.toggle('light-mode');
+    
+    // Cambiar el ícono y guardar la preferencia
+    if (body.classList.contains('light-mode')) {
+        icon.innerText = '☀️';
+        localStorage.setItem('theme', 'light');
+    } else {
+        icon.innerText = '🌙';
+        localStorage.setItem('theme', 'dark');
+    }
+});
+
+
+// Detectar el scroll dentro del contenedor de la tabla
+contenedorTabla.addEventListener('scroll', () => {
+    // Si bajamos más de 100px, mostramos el botón
+    if (contenedorTabla.scrollTop > 100) {
+        btnInicio.classList.add('show');
+    } else {
+        btnInicio.classList.remove('show');
+    }
+});
+
+// Acción de subir al inicio
+btnInicio.addEventListener('click', () => {
+    contenedorTabla.scrollTo({
+        top: 0,
+        behavior: 'smooth' // Efecto de deslizamiento suave
+    });
+});
 
 
 // 2. FUNCIÓN PARA OBTENER LOS DATOS
