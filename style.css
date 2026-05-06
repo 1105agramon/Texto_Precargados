@@ -2,22 +2,17 @@
    PALETA DE COLORES (Dark Mode Profesional)
    ========================================================== */
 :root {
-    --bg-color: #0f172a;       /* Fondo principal (Slate 900) */
-    --surface-color: #1e293b;  /* Fondo de tarjeta (Slate 800) */
-    --surface-hover: #334155;  /* Resaltado de fila (Slate 700) */
-    
-    --primary-color: #3b82f6;  /* Azul vibrante (Blue 500) */
-    --primary-hover: #60a5fa;  /* Azul más claro al pasar el mouse */
-    
-    --success-color: #10b981;  /* Verde esmeralda para el éxito */
-    
-    --text-main: #f1f5f9;      /* Texto principal casi blanco (Slate 100) */
-    --text-muted: #94a3b8;     /* Texto secundario grisáceo (Slate 400) */
-    
-    --border-color: #334155;   /* Bordes sutiles (Slate 700) */
-    --ring-color: rgba(59, 130, 246, 0.5); /* Anillo de enfoque azul translúcido */
-    
-    --input-bg: #111827;       /* Fondo del buscador ultra oscuro (Gray 950) */
+    --bg-color: #0f172a;       
+    --surface-color: #1e293b;  
+    --surface-hover: #334155;  
+    --primary-color: #3b82f6;  
+    --primary-hover: #60a5fa;  
+    --success-color: #10b981;  
+    --text-main: #f1f5f9;      
+    --text-muted: #94a3b8;     
+    --border-color: #334155;   
+    --ring-color: rgba(59, 130, 246, 0.5); 
+    --input-bg: #111827;       
 }
 
 /* ==========================================================
@@ -46,7 +41,7 @@ body {
 }
 
 /* ==========================================================
-   CABECERA
+   CABECERA Y CONTROLES
    ========================================================== */
 header {
     display: flex;
@@ -69,9 +64,6 @@ header {
     color: var(--text-muted);
 }
 
-/* ==========================================================
-   ESTRUCTURA DE CONTROLES (Buscador + Folio)
-   ========================================================== */
 .controls-container {
     display: flex;
     flex-wrap: wrap; 
@@ -79,7 +71,6 @@ header {
     width: 100%;
 }
 
-/* 1. Caja del buscador principal */
 .search-box {
     position: relative;
     flex-grow: 1; 
@@ -144,7 +135,6 @@ header {
     color: white;
 }
 
-/* 2. Caja para mantener juntos el folio y su botón */
 .folio-box {
     display: flex;
     gap: 12px;
@@ -195,7 +185,7 @@ header {
 }
 
 /* ==========================================================
-   CONTENEDOR Y DISEÑO DE LA TABLA
+   TABLA
    ========================================================== */
 .table-container {
     overflow-x: auto;
@@ -244,9 +234,6 @@ tbody tr:hover {
     transition: background-color 0.15s ease;
 }
 
-/* ==========================================================
-   CONFIGURACIÓN ESPECÍFICA DE COLUMNAS
-   ========================================================== */
 tbody td:nth-child(1),
 tbody td:nth-child(2), 
 tbody td:nth-child(3), 
@@ -255,6 +242,7 @@ tbody td:nth-child(6) {
     white-space: nowrap;
 }
 
+/* Celda de texto y Edición */
 .text-col {
     width: 100%;
     line-height: 1.6;
@@ -263,6 +251,19 @@ tbody td:nth-child(6) {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.editable-cell {
+    cursor: text;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.editable-cell:focus {
+    outline: 2px solid var(--primary-color);
+    background-color: var(--input-bg);
+    padding: 12px; 
+    -webkit-line-clamp: unset; /* Expande la celda al editar */
 }
 
 tbody td:nth-child(2) {
@@ -289,7 +290,7 @@ tbody td:nth-child(5) {
 }
 
 /* ==========================================================
-   BOTONES DE TABLA Y FLOTANTES
+   BOTONES
    ========================================================== */
 button.copy-btn {
     background-color: transparent;
@@ -356,7 +357,7 @@ button.copy-btn.copied {
 }
 
 /* ==========================================================
-   CARGADOR (Loader)
+   ANIMACIONES Y SCROLL
    ========================================================== */
 .loading {
     text-align: center;
@@ -380,30 +381,24 @@ button.copy-btn.copied {
     100% { transform: rotate(360deg); }
 }
 
-/* ==========================================================
-   SCROLLBAR (Estética Oscura)
-   ========================================================== */
 .table-container::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
-
 .table-container::-webkit-scrollbar-track {
     background: var(--surface-color);
     border-radius: 8px;
 }
-
 .table-container::-webkit-scrollbar-thumb {
     background: #4b5563;
     border-radius: 8px;
 }
-
 .table-container::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
 }
 
 /* ==========================================================
-   TOGGLE TEMA (Modo Claro/Oscuro)
+   MODO CLARO
    ========================================================== */
 .theme-btn {
     background: var(--primary-color);
@@ -436,7 +431,6 @@ body.light-mode {
     --text-muted: #475569;     
     --border-color: #cbd5e1;   
     --input-bg: #f1f5f9;       
-    --header-bg: #1e293b;      
 }
 
 body.light-mode .container {
@@ -467,8 +461,13 @@ body.light-mode button.copy-btn:hover {
     color: white;
 }
 
+body.light-mode .editable-cell:focus {
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
 /* ==========================================================
-   RESPONSIVE DESIGN 
+   RESPONSIVE
    ========================================================== */
 @media (max-width: 1000px) {
     .table-container { zoom: 0.9; }
@@ -481,17 +480,9 @@ body.light-mode button.copy-btn:hover {
 
 @media (max-width: 650px) {
     .table-container { zoom: 0.65; }
-    
-    /* Adaptación del bloque de controles para móviles */
-    .folio-box {
-        width: 100%; 
-    }
-    .folio-field {
-        flex-grow: 1; 
-    }
-    .copy-folio-btn {
-        flex-grow: 1; 
-    }
+    .folio-box { width: 100%; }
+    .folio-field { flex-grow: 1; }
+    .copy-folio-btn { flex-grow: 1; }
 }
 
 @media (max-width: 450px) {
