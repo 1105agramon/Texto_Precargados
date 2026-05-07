@@ -84,16 +84,7 @@ async function cargarDatos() {
         if (datosGlobales.length > 0 && datosGlobales[0].tema.toLowerCase() === "tema") {
             datosGlobales.shift(); 
         }
-
-        // Insertar mensaje fijo al inicio
-        datosGlobales.unshift({
-            tema: "LLAVE CDMX",
-            subtema: "Envío de Documentación",
-            categoria: "TRÁMITE",
-            texto: MENSAJE_LLAVE, 
-            hashtag: "#Documentos"
-        });
-
+        
         renderizarTabla(datosGlobales);
 
     } catch (error) {
@@ -187,8 +178,18 @@ async function copiarDesdeFila(fila, event) {
         const textoOriginal = boton.innerText;
         boton.innerText = "¡Copiado!";
         boton.classList.add('copied');
-        fila.style.backgroundColor = "rgba(16, 185, 129, 0.1)"; 
-        
+
+
+        // --- EFECTO DE ILUMINACIÓN INTELIGENTE ---
+        if (document.body.classList.contains('light-mode')) {
+            // Si está en Modo Claro: Destello en Azul Cerúleo
+            fila.style.backgroundColor = "rgba(4, 255, 109, 0.4)"; 
+        } else {
+            // Si está en Modo Oscuro: Destello en Morado Drácula
+            fila.style.backgroundColor = "rgba(62, 228, 112, 0.44)"; 
+        }
+
+
         setTimeout(() => {
             boton.innerText = textoOriginal;
             boton.classList.remove('copied');

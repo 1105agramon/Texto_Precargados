@@ -1,30 +1,43 @@
 /* ==========================================================
-   PALETA DE COLORES (Dark Mode Profesional)
+   1. PALETA DE COLORES "DRACULA OFFICIAL" (TEMA OSCURO DEFAULT)
+   Aesthetic: Vampírico, Alto Contraste, Neón Suave
    ========================================================== */
 :root {
-    --bg-color: #0f172a;       
-    --surface-color: #1e293b;  
-    --surface-hover: #334155;  
-    --primary-color: #3b82f6;  
-    --primary-hover: #60a5fa;  
-    --success-color: #10b981;  
-    --text-main: #f1f5f9;      
-    --text-muted: #94a3b8;     
-    --border-color: #334155;   
-    --ring-color: rgba(59, 130, 246, 0.5); 
-    --input-bg: #111827;       
+    /* Fondo principal y superficies */
+    --bg-color: #282a36;       
+    --surface-color: #343746;  
+    --surface-hover: #44475a;  
+    
+    /* Colores Principales */
+    --primary-color: #bd93f9;  /* Dracula Purple */
+    --primary-hover: #ff79c6;  /* Dracula Pink */
+    
+    /* Acentos */
+    --success-color: #50fa7b;  /* Verde neón suave */
+    --accent-color: #ffb86c;   /* Naranja/Ámbar para el folio */
+    --info-color: #8be9fd;     /* Cyan para detalles */
+    
+    /* Textos */
+    --text-main: #f8f8f2;      /* Blanco hueso */
+    --text-muted: #6272a4;     /* Azul acero oscuro */
+    
+    /* Bordes y Controles */
+    --border-color: #44475a;   
+    --input-bg: #21222c;       /* Fondo de inputs */
 }
 
 /* ==========================================================
-   ESTILOS GENERALES
+   2. ESTILOS GENERALES Y ESTRUCTURA BASE
    ========================================================== */
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-main);
     margin: 0;
     padding: 30px 20px;
     -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -32,16 +45,17 @@ body {
     margin: 0 auto;
     background: var(--surface-color);
     padding: 32px;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
     border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     height: calc(90vh - 30px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(189, 147, 249, 0.05);
+    transition: all 0.3s ease;
 }
 
 /* ==========================================================
-   CABECERA Y CONTROLES
+   3. CABECERA (TÍTULOS Y BOTÓN DE TEMA)
    ========================================================== */
 header {
     display: flex;
@@ -50,20 +64,106 @@ header {
     margin-bottom: 24px;
 }
 
+/* ==========================================================
+   OPCIÓN 3: BARRIDO DE LUZ PREMIUM (BUCLE INFINITO)
+   ========================================================== */
 .header-titles h1 {
     margin: 0;
     font-size: 26px;
-    font-weight: 700;
-    color: var(--text-main);
-    letter-spacing: -0.8px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    
+    /* Efecto de Brillo para el Título */
+    background: linear-gradient(
+        120deg, 
+        var(--primary-hover) 25%, 
+        #ffffff 50%, 
+        var(--primary-hover) 75%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    /* Animación infinita de 3 segundos */
+    animation: shineSweep 3s linear infinite;
 }
 
 .header-titles .subtitle {
     margin: 4px 0 0 0;
-    font-size: 15px;
-    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    
+    /* Efecto de Brillo para el Nombre */
+    background: linear-gradient(
+        120deg, 
+        var(--primary-color) 25%, 
+        #ffffff 50%, 
+        var(--primary-color) 75%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    /* Animación infinita un poco más lenta (4s) para contraste */
+    animation: shineSweep 4s linear infinite;
+    opacity: 0.9;
 }
 
+@keyframes shineSweep {
+    to {
+        background-position: 200% center;
+    }
+}
+
+/* --- Ajuste para que resalte igual de pro en el Modo Claro --- */
+body.light-mode .header-titles h1 {
+    background: linear-gradient(
+        120deg, 
+        var(--danger-color) 25%, 
+        #ff8da1 50%, 
+        var(--danger-color) 75%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+}
+
+body.light-mode .header-titles .subtitle {
+    background: linear-gradient(
+        120deg, 
+        var(--primary-color) 25%, 
+        #82aaff 50%, 
+        var(--primary-color) 75%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+}
+
+.theme-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: 20px; 
+    padding: 6px 14px;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+}
+
+.theme-btn:hover {
+    background: var(--surface-hover);
+    color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    box-shadow: 0 0 10px rgba(255, 121, 198, 0.2);
+}
+
+/* ==========================================================
+   4. CONTROLES SUPERIORES (BUSCADOR Y FOLIO)
+   ========================================================== */
 .controls-container {
     display: flex;
     flex-wrap: wrap; 
@@ -71,6 +171,7 @@ header {
     width: 100%;
 }
 
+/* Buscador */
 .search-box {
     position: relative;
     flex-grow: 1; 
@@ -82,39 +183,36 @@ header {
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-muted);
+    color: var(--primary-color); 
+    opacity: 0.8;
 }
 
 .search-box input {
     width: 100%;
-    padding: 14px 45px 14px 44px; 
-    font-size: 16px;
+    padding: 12px 40px 12px 42px; 
+    font-size: 15px;
     font-family: inherit;
     color: var(--text-main);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
     background-color: var(--input-bg);
+    transition: all 0.25s ease;
+    box-sizing: border-box;
 }
 
 .search-box input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px var(--ring-color);
-}
-
-.search-box input::placeholder {
-    color: #4b5563;
+    box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.15);
 }
 
 .clear-btn {
     position: absolute;
-    right: 14px; 
+    right: 12px; 
     top: 50%;
     transform: translateY(-50%);
-    background: #334155; 
-    color: #f1f5f9;
+    background: transparent;
+    color: var(--text-muted);
     border: none;
     border-radius: 50%;
     width: 24px;
@@ -127,46 +225,49 @@ header {
     transition: all 0.2s ease;
     z-index: 5;
     padding: 0;
-    line-height: 1;
 }
 
 .clear-btn:hover {
-    background-color: #ef4444; 
-    color: white;
+    color: #ff5555; /* Dracula Red */
+    transform: translateY(-50%) scale(1.1);
 }
 
+/* Folio y Botón Copiar Llave */
 .folio-box {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     flex-shrink: 0; 
 }
 
 .folio-field {
     width: 140px; 
-    padding: 14px;
-    font-size: 16px;
+    padding: 12px;
+    font-size: 15px;
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    color: var(--text-main);
-    transition: all 0.2s ease;
+    color: var(--accent-color); 
+    transition: all 0.25s ease;
     box-sizing: border-box;
+    text-align: center;
+    font-weight: 700;
+    font-family: 'Courier New', Courier, monospace; 
 }
 
 .folio-field:focus {
     outline: none;
-    border-color: var(--success-color); 
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    border-color: var(--accent-color); 
+    box-shadow: 0 0 0 3px rgba(255, 184, 108, 0.15);
 }
 
 .copy-folio-btn {
     background-color: var(--primary-color);
-    color: white;
+    color: var(--bg-color); 
     border: none;
     border-radius: 8px;
-    padding: 0 16px;
+    padding: 0 18px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 800;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap; 
@@ -176,39 +277,41 @@ header {
 }
 
 .copy-folio-btn:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-1px);
+    background-color: var(--primary-hover); 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 121, 198, 0.3);
 }
 
 .copy-folio-btn.copied {
     background-color: var(--success-color);
+    color: var(--bg-color);
+    box-shadow: 0 4px 12px rgba(80, 250, 123, 0.3);
 }
 
 /* ==========================================================
-   TABLA
+   5. CONTENEDOR Y DISEÑO DE LA TABLA
    ========================================================== */
 .table-container {
     overflow-x: auto;
     max-height: 55vh;
     border-radius: 8px;
     border: 1px solid var(--border-color);
-    background-color: var(--surface-color);
+    background-color: var(--bg-color); 
 }
 
 table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+    border-collapse: collapse;
     min-width: 5px; 
 }
 
 thead th {
-    background-color: #111827;
-    color: var(--text-main);
-    font-size: 13px;
-    font-weight: 700;
+    background-color: var(--input-bg);
+    color: var(--primary-color); 
+    font-size: 12px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
     padding: 16px 20px;
     text-align: left;
     position: sticky;
@@ -219,21 +322,21 @@ thead th {
 
 tbody td {
     padding: 16px 20px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(68, 71, 90, 0.5); 
     vertical-align: middle;
     font-size: 14px;
-    color: #e2e8f0;
+    transition: background-color 0.2s ease;
 }
 
 tbody tr:nth-child(even) {
-    background-color: #232f42;
+    background-color: rgba(68, 71, 90, 0.15); 
 }
 
 tbody tr:hover {
     background-color: var(--surface-hover);
-    transition: background-color 0.15s ease;
 }
 
+/* Formato por Columnas */
 tbody td:nth-child(1),
 tbody td:nth-child(2), 
 tbody td:nth-child(3), 
@@ -242,7 +345,10 @@ tbody td:nth-child(6) {
     white-space: nowrap;
 }
 
-/* Celda de texto y Edición */
+tbody td:nth-child(1) { color: var(--primary-hover); font-weight: 700; }
+tbody td:nth-child(3) { color: var(--info-color); font-style: italic; font-weight: 500; }
+tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New', monospace; font-weight: 700; text-align: center; }
+
 .text-col {
     width: 100%;
     line-height: 1.6;
@@ -251,19 +357,7 @@ tbody td:nth-child(6) {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-}
-
-.editable-cell {
-    cursor: text;
-    transition: all 0.2s ease;
-    border-radius: 6px;
-}
-
-.editable-cell:focus {
-    outline: 2px solid var(--primary-color);
-    background-color: var(--input-bg);
-    padding: 12px; 
-    -webkit-line-clamp: unset; /* Expande la celda al editar */
+    color: var(--text-main);
 }
 
 tbody td:nth-child(2) {
@@ -275,32 +369,41 @@ tbody td:nth-child(2) {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-}
-
-tbody td:nth-child(5) {
-    font-weight: 600;
-    color: var(--primary-hover);
-    font-size: 13px;
-    font-family: 'ui-monospace', 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
-    text-align: center; 
+    color: #f1fa8c; /* Dracula Yellow */
+    font-weight: 500;
 }
 
 .center-col {
     text-align: center;
 }
 
+/* Celda Editable */
+.editable-cell {
+    cursor: text;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.editable-cell:focus {
+    outline: 1px solid var(--primary-color);
+    background-color: var(--surface-hover);
+    padding: 12px; 
+    -webkit-line-clamp: unset; 
+    box-shadow: inset 4px 0 0 var(--primary-hover); 
+}
+
 /* ==========================================================
-   BOTONES
+   6. BOTONES DE ACCIÓN (COPIAR Y SCROLL)
    ========================================================== */
 button.copy-btn {
     background-color: transparent;
-    color: var(--primary-hover);
-    border: 1.5px solid var(--primary-hover);
-    padding: 8px 16px;
+    color: var(--primary-color);
+    border: 1.5px solid var(--border-color);
+    padding: 6px 14px;
     border-radius: 6px;
     font-family: inherit;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
     display: inline-flex;
@@ -310,69 +413,64 @@ button.copy-btn {
 }
 
 button.copy-btn:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
+    background-color: var(--surface-hover);
+    border-color: var(--primary-hover);
+    color: var(--primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-button.copy-btn:active {
-    transform: translateY(0);
 }
 
 button.copy-btn.copied {
-    background-color: var(--success-color);
     border-color: var(--success-color);
-    color: white;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    color: var(--success-color);
+    background-color: rgba(80, 250, 123, 0.1);
 }
 
+/* Botón flotante Inicio */
 .btn-inicio {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    width: 45px;
-    height: 45px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
+    width: 44px;
+    height: 44px;
+    background-color: var(--surface-hover);
+    color: var(--primary-color);
+    border: 2px solid var(--border-color);
     border-radius: 50%;
     cursor: pointer;
     display: none; 
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     z-index: 100;
     transition: all 0.3s ease;
 }
 
 .btn-inicio:hover {
-    background-color: var(--primary-hover);
     transform: scale(1.1);
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border-color: var(--primary-color);
 }
 
-.btn-inicio.show {
-    display: flex; 
-}
+.btn-inicio.show { display: flex; }
 
 /* ==========================================================
-   ANIMACIONES Y SCROLL
+   7. LOADER Y SCROLLBAR
    ========================================================== */
 .loading {
     text-align: center;
     color: var(--text-muted);
     padding: 50px !important;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .loader {
-    border: 3px solid #334155;
-    border-top: 3px solid var(--primary-color);
+    border: 3px solid var(--border-color);
+    border-top: 3px solid var(--primary-hover);
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    animation: spin 1s linear infinite;
+    width: 24px;
+    height: 24px;
+    animation: spin 0.8s linear infinite;
     margin: 0 auto 16px auto;
 }
 
@@ -381,93 +479,99 @@ button.copy-btn.copied {
     100% { transform: rotate(360deg); }
 }
 
-.table-container::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-.table-container::-webkit-scrollbar-track {
-    background: var(--surface-color);
-    border-radius: 8px;
-}
-.table-container::-webkit-scrollbar-thumb {
-    background: #4b5563;
-    border-radius: 8px;
-}
-.table-container::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
-}
+.table-container::-webkit-scrollbar { width: 8px; height: 8px; }
+.table-container::-webkit-scrollbar-track { background: var(--bg-color); }
+.table-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 8px; }
+.table-container::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
 
 /* ==========================================================
-   MODO CLARO
+   8. MODO CLARO "HIGH-CONTRAST DASHBOARD"
+   Aesthetic: Limpio, Textos definidos, Colores saturados
    ========================================================== */
-.theme-btn {
-    background: var(--primary-color);
-    color: rgb(177, 175, 175);
-    border: none;
-    border-radius: 20px; 
-    padding: 6px 16px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: fit-content;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.theme-btn:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-}
-
 body.light-mode {
-    --bg-color: #c7d7ec;       
-    --surface-color: #ffffffbb;  
-    --surface-hover: #ffe9c1;  
-    --text-main: #0f172a;      
-    --text-muted: #475569;     
+    --bg-color: #eef2f6;       /* Gris frío muy claro, elimina el destello del blanco puro */
+    --surface-color: #ffffff;  /* Contenedor en blanco puro para contraste */
+    --surface-hover: #d8ffffa6;  /* Resaltado de fila sutil pero visible */
+    
+    /* Acentos Vivos y Profundos (NO pastel, para que resalten) */
+    --primary-color: #0284c7;  /* Azul Cerúleo vibrante */
+    --primary-hover: #0369a1;  
+    
+    --danger-color: #e11d48;   /* Rojo Carmesí oscuro para el Título (Alerta/Acción) */
+    --success-color: #059669;  /* Verde Esmeralda profundo */
+    --accent-color: #ea580c;   /* Naranja brillante para Folios */
+    --info-color: #4f46e5;     /* Índigo eléctrico para categorías */
+    
+    /* Textos (MÁXIMA LEGIBILIDAD) */
+    --text-main: #0f172a;      /* Slate 900: Casi negro absoluto */
+    --text-muted: #334155;     /* Slate 700: Gris muy oscuro, nunca opaco */
+    
     --border-color: #cbd5e1;   
-    --input-bg: #f1f5f9;       
+    --input-bg: #ffffff;       
 }
 
+/* Ajustes de Sombras para Light Mode */
 body.light-mode .container {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e2e8f0;
 }
 
+/* Títulos y Header */
+body.light-mode .header-titles h1 {
+    color: var(--danger-color);
+    text-shadow: none;
+}
+body.light-mode .header-titles .subtitle {
+    color: var(--primary-color);
+}
+body.light-mode .theme-btn:hover {
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15);
+}
+
+/* El Encabezado de Tabla Oscuro (Look Premium/Dashboard) */
 body.light-mode thead th {
-    background-color: #11ca64; 
-    color: #ffffff;            
-    border-bottom: 3px solid #25eb9f;
+    background-color: #0f172a;  /* Slate 900 */
+    color: #ffffff;             /* Letra blanca pura */
+    border-bottom: 3px solid var(--primary-color);
 }
 
-body.light-mode tbody tr:nth-child(even) {
-    background-color: #f8fafc; 
+/* Detalles de Columnas en Modo Claro */
+body.light-mode tbody td:nth-child(1) { color: var(--danger-color); } /* Tema */
+body.light-mode tbody td:nth-child(2) { color: var(--text-main); font-weight: 600; } /* Subtema */
+body.light-mode tbody td:nth-child(5) { color: var(--success-color); } /* Hashtag */
+
+/* Folio Impecable */
+body.light-mode .folio-field {
+    background-color: #fff7ed; /* Fondo naranja súper suave */
+    color: #c2410c;            /* Texto naranja oscuro sólido */
+    border: 2px solid var(--accent-color);
 }
 
-body.light-mode tbody tr:hover {
-    background-color: var(--surface-hover); 
+/* Botones de Acción (Alto Impacto) */
+body.light-mode button.copy-btn {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
 }
-
-body.light-mode tbody td {
-    color: #1e293b;
-    border-bottom: 1px solid #e2e8f0;
-}
-
 body.light-mode button.copy-btn:hover {
-    background-color: #3b82f6;
-    color: white;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+body.light-mode button.copy-btn.copied {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: #ffffff;
 }
 
+/* Celda Editable Claro */
 body.light-mode .editable-cell:focus {
     background-color: #ffffff;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 4px 0 0 var(--primary-color), 0 4px 15px rgba(0,0,0,0.05);
+    outline: 1px solid var(--border-color);
 }
 
 /* ==========================================================
-   RESPONSIVE
+   9. RESPONSIVE DESIGN (MÓVILES Y PANTALLAS PEQUEÑAS)
    ========================================================== */
 @media (max-width: 1000px) {
     .table-container { zoom: 0.9; }
