@@ -1,24 +1,23 @@
 // 1. CONFIGURACIÓN DE TU GOOGLE SHEETS
-const SHEET_ID = '1HOUWPiwvC1w-lLFJV5vVNVjE519kiOjJ4weGgKCU9aU'; 
+const SHEET_ID = '1x7iucwchPYusc81R09oP-87E4tii0JTP8Fyhkvz_GvQ'; 
 
 // IMPORTANTE: Debes colocar el 'gid' exacto de cada hoja. 
 // Lo encuentras en la URL de tu Google Sheets cuando cambias de pestaña (al final dice #gid=XXXXX)
 const PESTANAS = [
     { id: 'saludos', nombre: 'SALUDOS', gid: '0' },
-    { id: 'f', nombre: 'F', gid: '756679092' }, 
-    { id: 'llave', nombre: 'Llave', gid: '2' }, // CAMBIAR ESTE GID
-    { id: 'lytc', nombre: 'L y TC', gid: '3' }, // CAMBIAR ESTE GID
-    { id: 'petc', nombre: 'P e TC', gid: '4' }, // CAMBIAR ESTE GID
-    { id: 'hnc', nombre: 'HNC', gid: '5' }, // CAMBIAR ESTE GID
-    { id: 'becas', nombre: 'Becas y AS', gid: '6' }, // CAMBIAR ESTE GID
-    { id: 'ayb', nombre: 'A y B', gid: '7' }, // CAMBIAR ESTE GID
-    { id: 'actcurp', nombre: 'Act y CURP', gid: '8' }, // CAMBIAR ESTE GID
-    { id: 'cons', nombre: 'Cons y cert', gid: '9' }, // CAMBIAR ESTE GID
-    { id: 'tramites', nombre: 'Tramites', gid: '10' }, // CAMBIAR ESTE GID
-    { id: 'rsuac', nombre: 'R SUAC', gid: '11' }, // CAMBIAR ESTE GID
-    { id: 'info1', nombre: 'info', gid: '12' }, // CAMBIAR ESTE GID
-    { id: 'info2', nombre: 'info 2', gid: '13' }, // CAMBIAR ESTE GID
-    { id: 'alcedos', nombre: 'Alc y edos', gid: '14' } // CAMBIAR ESTE GID
+    { id: 'f', nombre: 'F', gid: '2042615712' }, 
+    { id: 'llave', nombre: 'Llave', gid: '815191000' }, // CAMBIAR ESTE GID
+    { id: 'lytc', nombre: 'L y TC', gid: '815997596' }, // CAMBIAR ESTE GID
+    { id: 'peinfr', nombre: 'P e Infr', gid: '706698375' }, // CAMBIAR ESTE GID
+    { id: 'hnc', nombre: 'HNC', gid: '217925413' }, // CAMBIAR ESTE GID
+    { id: 'becas', nombre: 'Becas y AS', gid: '756532134' }, // CAMBIAR ESTE GID
+    { id: 'ayb', nombre: 'A y B', gid: '1346245991' }, // CAMBIAR ESTE GID
+    { id: 'actcurp', nombre: 'Act y CURP', gid: '2080085996' }, // CAMBIAR ESTE GID
+    { id: 'cons', nombre: 'Cons y cert', gid: '1274962924' }, // CAMBIAR ESTE GID
+    { id: 'tramites', nombre: 'Tramites', gid: '1352914172' }, // CAMBIAR ESTE GID
+    { id: 'rsuac', nombre: 'R SUAC', gid: '2031799909' }, // CAMBIAR ESTE GID
+    { id: 'info1', nombre: 'Info', gid: '429062519' }, // CAMBIAR ESTE GID
+    { id: 'alcyedos', nombre: 'Alc y edos', gid: '388678595' }, // CAMBIAR ESTE GID
 ];
 
 let cacheDatos = {}; // Memoria para no descargar 2 veces la misma pestaña
@@ -136,18 +135,34 @@ function renderizarTabla(datos) {
     });
 }
 
-// 5. LÓGICA DEL BUSCADOR (FILTRO DE LA PESTAÑA ACTUAL)
+// 5. LÓGICA DEL BUSCADOR - VERSIÓN AVANZADA (MÚLTIPLES PALABRAS)
 searchInput.addEventListener('input', function(e) {
-    const terminoBusqueda = e.target.value.toLowerCase();
+    const terminoBusqueda = e.target.value.toLowerCase().trim();
     const datosDePestana = cacheDatos[tabActiva] || [];
 
-    // Control de visibilidad del botón X
     clearBtn.style.display = terminoBusqueda.length > 0 ? 'block' : 'none';
 
+    if (terminoBusqueda === '') {
+        renderizarTabla(datosDePestana);
+        return;
+    }
+
+    // Dividir la búsqueda en palabras individuales
+    const palabrasBusqueda = terminoBusqueda.split(/\s+/);
+
     const datosFiltrados = datosDePestana.filter(item => {
-        return String(item.tema).toLowerCase().includes(terminoBusqueda) ||
-               String(item.subtema).toLowerCase().includes(terminoBusqueda) ||
-               String(item.categoria).toLowerCase().includes(terminoBusqueda);
+        const camposConcatenados = [
+            item.tema,
+            item.subtema,
+            item.categoria,
+            item.texto,
+            item.hashtag
+        ].map(campo => String(campo || '').toLowerCase()).join(' ');
+
+        // Todas las palabras deben estar presentes en al menos uno de los campos
+        return palabrasBusqueda.every(palabra => 
+            camposConcatenados.includes(palabra)
+        );
     });
 
     renderizarTabla(datosFiltrados);

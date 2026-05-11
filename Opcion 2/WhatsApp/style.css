@@ -1,23 +1,23 @@
 /* ==========================================================
-   PALETA DE COLORES (Dark Mode Profesional)
+   PALETA DE COLORES (WhatsApp Dark Mode)
    ========================================================== */
 :root {
-    --bg-color: #0f172a;       /* Fondo principal (Slate 900) */
-    --surface-color: #1e293b;  /* Fondo de tarjeta (Slate 800) */
-    --surface-hover: #334155;  /* Resaltado de fila (Slate 700) */
+    --bg-color: #0a1014;       /* Fondo principal (WhatsApp Dark) */
+    --surface-color: #1a2a32;  /* Fondo de tarjeta */
+    --surface-hover: #233540;  /* Resaltado de fila */
     
-    --primary-color: #3b82f6;  /* Azul vibrante (Blue 500) */
-    --primary-hover: #60a5fa;  /* Azul más claro al pasar el mouse */
+    --primary-color: #00a884;  /* Verde WhatsApp principal */
+    --primary-hover: #06cf9c;  /* Verde más claro al pasar el mouse */
     
-    --success-color: #10b981;  /* Verde esmeralda para el éxito */
+    --success-color: #25d366;  /* Verde éxito WhatsApp */
     
-    --text-main: #f1f5f9;      /* Texto principal casi blanco (Slate 100) */
-    --text-muted: #94a3b8;     /* Texto secundario grisáceo (Slate 400) */
+    --text-main: #e9edef;      /* Texto principal claro */
+    --text-muted: #8696a0;     /* Texto secundario */
     
-    --border-color: #334155;   /* Bordes sutiles (Slate 700) */
-    --ring-color: rgba(59, 130, 246, 0.5); /* Anillo de enfoque azul translúcido */
+    --border-color: #233540;   /* Bordes sutiles */
+    --ring-color: rgba(0, 168, 132, 0.5); /* Anillo de enfoque verde translúcido */
     
-    --input-bg: #111827;       /* Fondo del buscador ultra oscuro (Gray 950) */
+    --input-bg: #0c181e;       /* Fondo del buscador */
 }
 
 /* ==========================================================
@@ -67,7 +67,10 @@ header {
 .header-titles .subtitle {
     margin: 4px 0 0 0;
     font-size: 15px;
-    color: var(--text-muted);
+    color: var(--primary-color);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 /* Estilo para el botón de acceso a WhatsApp en el Index */
@@ -106,8 +109,8 @@ header {
 .clear-btn {
     position: absolute;
     right: 14px; /* Espacio desde el borde derecho */
-    background: #334155; /* Color circular oscuro */
-    color: #f1f5f9;
+    background: var(--border-color);
+    color: var(--text-muted);
     border: none;
     border-radius: 50%;
     width: 24px;
@@ -165,7 +168,7 @@ header {
 }
 
 .search-box input::placeholder {
-    color: #4b5563;
+    color: #54656f;
 }
 
 /* ==========================================================
@@ -207,7 +210,7 @@ header {
     background-color: var(--primary-color);
     color: white;
     border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 168, 132, 0.2);
 }
 
 /* Scrollbar específico para la barra de pestañas */
@@ -220,7 +223,7 @@ header {
 }
 
 .tabs-container::-webkit-scrollbar-thumb {
-    background: #4b5563;
+    background: var(--primary-color);
     border-radius: 10px;
 }
 
@@ -248,8 +251,8 @@ table {
 }
 
 thead th {
-    background-color: #111827;
-    color: var(--text-main);
+    background-color: #0c181e;
+    color: var(--primary-color);
     font-size: 13px;
     font-weight: 700;
     text-transform: uppercase;
@@ -259,20 +262,21 @@ thead th {
     position: sticky;
     top: 0;
     z-index: 10;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--primary-color);
 }
 
 tbody td {
+    height: 70px; /* Ajusta este valor según necesites */
     padding: 16px 20px;
     border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
     font-size: 14px;
-    color: #e2e8f0;
+    color: #d1d7db;
 }
 
 /* Efecto cebra y hover */
 tbody tr:nth-child(even) {
-    background-color: #232f42;
+    background-color: #1e2d37;
 }
 
 tbody tr:hover {
@@ -285,7 +289,6 @@ tbody tr:hover {
    ========================================================== */
 
 /* PROTECCIÓN: Evitamos que las columnas cortas se partan a la mitad */
-tbody td:nth-child(1), /* Tema */
 tbody td:nth-child(2), /* Subtema */
 tbody td:nth-child(3), /* Categoría */
 tbody td:nth-child(5), /* Hashtag */
@@ -357,7 +360,7 @@ button.copy-btn:hover {
     border-color: var(--primary-color);
     color: white;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 168, 132, 0.3);
 }
 
 button.copy-btn:active {
@@ -368,7 +371,7 @@ button.copy-btn.copied {
     background-color: var(--success-color);
     border-color: var(--success-color);
     color: white;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
 }
 
 /* Loader */
@@ -380,7 +383,7 @@ button.copy-btn.copied {
 }
 
 .loader {
-    border: 3px solid #334155;
+    border: 3px solid var(--border-color);
     border-top: 3px solid var(--primary-color);
     border-radius: 50%;
     width: 28px;
@@ -395,7 +398,7 @@ button.copy-btn.copied {
 }
 
 /* ==========================================================
-   SCROLLBAR (Estética Oscura de la Tabla)
+   SCROLLBAR (Estética WhatsApp Dark)
    ========================================================== */
 .table-container::-webkit-scrollbar {
     width: 8px;
@@ -408,12 +411,12 @@ button.copy-btn.copied {
 }
 
 .table-container::-webkit-scrollbar-thumb {
-    background: #4b5563;
+    background: var(--primary-color);
     border-radius: 8px;
 }
 
 .table-container::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
+    background: var(--primary-hover);
 }
 
 /* ==========================================================

@@ -263,6 +263,7 @@ thead th {
 }
 
 tbody td {
+    height: 70px; /* Ajusta este valor según necesites */
     padding: 16px 20px;
     border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
@@ -285,7 +286,6 @@ tbody tr:hover {
    ========================================================== */
 
 /* PROTECCIÓN: Evitamos que las columnas cortas se partan a la mitad */
-tbody td:nth-child(1), /* Tema */
 tbody td:nth-child(2), /* Subtema */
 tbody td:nth-child(3), /* Categoría */
 tbody td:nth-child(5), /* Hashtag */
