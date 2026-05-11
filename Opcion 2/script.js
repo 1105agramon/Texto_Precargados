@@ -118,14 +118,17 @@ function renderizarTabla(datos) {
 
     datos.forEach(item => {
         const tr = document.createElement('tr');
-        const textoCodificado = encodeURIComponent(item.texto);
+        
+        // TRUCO AQUÍ: Si Google Sheets envía los símbolos < y > como texto, los forzamos a ser HTML
+        let textoVisual = item.texto.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+        const textoCodificado = encodeURIComponent(textoVisual);
 
         tr.setAttribute('onclick', 'copiarDesdeFila(this)');
         tr.innerHTML = `
             <td>${item.tema}</td>
             <td>${item.subtema}</td>
             <td>${item.categoria}</td>
-            <td class="text-col">${item.texto}</td>
+            <td class="text-col">${textoVisual}</td>
             <td>${item.hashtag}</td>
             <td class="center-col">
                 <button class="copy-btn" data-texto="${textoCodificado}" onclick="copiarAlPortapapeles(event, this)">Copiar</button>
@@ -187,28 +190,20 @@ async function ejecutarCopiado(boton) {
     try {
         const textoExtraido = decodeURIComponent(boton.getAttribute('data-texto'));
         
-        // Buscamos si el texto es exactamente una etiqueta HTML de imagen
-        // Ejemplo: <img src="https://i.imgur.com/imagen.png">
-        const esImagen = textoExtraido.match(/<img[^>]+src=["']([^"']+)["']/i);
+        // Verificamos si contiene una etiqueta de imagen
+        const contieneImagen = textoExtraido.includes('<img');
 
-        if (esImagen) {
-            // Es una imagen. Extraemos la URL
-            const urlImagen = esImagen[1];
+        if (contieneImagen) {
+            // Creamos un Blob de tipo HTML para que las aplicaciones 
+            // reconozcan tanto el texto como la imagen.
+            const type = "text/html";
+            const blob = new Blob([textoExtraido], { type });
+            const data = [new ClipboardItem({ 
+                [type]: blob, 
+                "text/plain": new Blob([textoExtraido], {type: "text/plain"}) 
+            })];
             
-            try {
-                // Intentamos descargarla y convertirla a Blob
-                const respuesta = await fetch(urlImagen);
-                const blob = await respuesta.blob();
-                
-                // Si funciona, la copiamos como archivo al portapapeles
-                const item = new ClipboardItem({ [blob.type]: blob });
-                await navigator.clipboard.write([item]);
-                
-            } catch (errorFetch) {
-                console.warn("Bloqueo CORS al descargar la imagen. Se copiará como texto en su lugar.", errorFetch);
-                // Plan B: Si falla la descarga, copiamos el código HTML
-                await navigator.clipboard.writeText(textoExtraido);
-            }
+            await navigator.clipboard.write(data);
         } else {
             // Si es texto normal, copiamos como siempre
             await navigator.clipboard.writeText(textoExtraido);
@@ -220,13 +215,15 @@ async function ejecutarCopiado(boton) {
         boton.classList.add('copied');
         
         setTimeout(() => {
-            boton.innerText = "Copiar"; // Reiniciamos texto fijo para evitar bugs visuales
+            boton.innerText = "Copiar";
             boton.classList.remove('copied');
         }, 1500);
         
     } catch (err) {
         console.error('Error al copiar: ', err);
-        alert("Tu navegador bloqueó la acción. Revisa los permisos del portapapeles.");
+        // Plan B: Copiar como texto plano si falla lo anterior
+        const textoExtraido = decodeURIComponent(boton.getAttribute('data-texto'));
+        await navigator.clipboard.writeText(textoExtraido);
     }
 }
 

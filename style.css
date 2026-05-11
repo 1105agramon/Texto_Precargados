@@ -29,6 +29,17 @@
 /* ==========================================================
    2. ESTILOS GENERALES Y ESTRUCTURA BASE
    ========================================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-color);
@@ -52,6 +63,7 @@ body {
     height: calc(90vh - 30px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(189, 147, 249, 0.05);
     transition: all 0.3s ease;
+    animation: fadeInUp 0.5s ease-out;
 }
 
 /* ==========================================================
@@ -64,27 +76,16 @@ header {
     margin-bottom: 24px;
 }
 
-/* ==========================================================
-   OPCIÓN 3: BARRIDO DE LUZ PREMIUM (BUCLE INFINITO)
-   ========================================================== */
 .header-titles h1 {
     margin: 0;
     font-size: 26px;
     font-weight: 800;
     letter-spacing: -0.5px;
-    
-    /* Efecto de Brillo para el Título */
-    background: linear-gradient(
-        120deg, 
-        var(--primary-hover) 25%, 
-        #ffffff 50%, 
-        var(--primary-hover) 75%
-    );
+    background: linear-gradient(120deg, var(--primary-hover) 25%, #ffffff 50%, var(--primary-hover) 75%);
     background-size: 200% auto;
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
-    /* Animación infinita de 3 segundos */
     animation: shineSweep 3s linear infinite;
 }
 
@@ -93,48 +94,27 @@ header {
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.5px;
-    
-    /* Efecto de Brillo para el Nombre */
-    background: linear-gradient(
-        120deg, 
-        var(--primary-color) 25%, 
-        #ffffff 50%, 
-        var(--primary-color) 75%
-    );
+    background: linear-gradient(120deg, var(--primary-color) 25%, #ffffff 50%, var(--primary-color) 75%);
     background-size: 200% auto;
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
-    /* Animación infinita un poco más lenta (4s) para contraste */
     animation: shineSweep 4s linear infinite;
     opacity: 0.9;
 }
 
 @keyframes shineSweep {
-    to {
-        background-position: 200% center;
-    }
+    to { background-position: 200% center; }
 }
 
-/* --- Ajuste para que resalte igual de pro en el Modo Claro --- */
 body.light-mode .header-titles h1 {
-    background: linear-gradient(
-        120deg, 
-        var(--danger-color) 25%, 
-        #ff8da1 50%, 
-        var(--danger-color) 75%
-    );
+    background: linear-gradient(120deg, var(--danger-color) 25%, #ff8da1 50%, var(--danger-color) 75%);
     background-size: 200% auto;
     -webkit-background-clip: text;
 }
 
 body.light-mode .header-titles .subtitle {
-    background: linear-gradient(
-        120deg, 
-        var(--primary-color) 25%, 
-        #82aaff 50%, 
-        var(--primary-color) 75%
-    );
+    background: linear-gradient(120deg, var(--primary-color) 25%, #82aaff 50%, var(--primary-color) 75%);
     background-size: 200% auto;
     -webkit-background-clip: text;
 }
@@ -147,7 +127,7 @@ body.light-mode .header-titles .subtitle {
     padding: 6px 14px;
     cursor: pointer;
     margin-top: 6px;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 14px;
     display: flex;
     align-items: center;
@@ -161,6 +141,10 @@ body.light-mode .header-titles .subtitle {
     box-shadow: 0 0 10px rgba(255, 121, 198, 0.2);
 }
 
+.theme-btn:active {
+    transform: scale(0.92);
+}
+
 /* ==========================================================
    4. CONTROLES SUPERIORES (BUSCADOR Y FOLIO)
    ========================================================== */
@@ -171,20 +155,11 @@ body.light-mode .header-titles .subtitle {
     width: 100%;
 }
 
-/* Buscador */
+/* Buscador con Animación */
 .search-box {
     position: relative;
     flex-grow: 1; 
     min-width: 250px; 
-}
-
-.search-icon {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--primary-color); 
-    opacity: 0.8;
 }
 
 .search-box input {
@@ -196,14 +171,30 @@ body.light-mode .header-titles .subtitle {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     background-color: var(--input-bg);
-    transition: all 0.25s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-sizing: border-box;
 }
 
 .search-box input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.15);
+    box-shadow: 0 0 20px rgba(189, 147, 249, 0.2);
+    padding-left: 48px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-color); 
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus + .search-icon {
+    color: var(--primary-hover);
+    transform: translateY(-50%) scale(1.2);
 }
 
 .clear-btn {
@@ -228,7 +219,7 @@ body.light-mode .header-titles .subtitle {
 }
 
 .clear-btn:hover {
-    color: #ff5555; /* Dracula Red */
+    color: #ff5555; 
     transform: translateY(-50%) scale(1.1);
 }
 
@@ -257,7 +248,7 @@ body.light-mode .header-titles .subtitle {
 .folio-field:focus {
     outline: none;
     border-color: var(--accent-color); 
-    box-shadow: 0 0 0 3px rgba(255, 184, 108, 0.15);
+    box-shadow: 0 0 15px rgba(255, 184, 108, 0.2);
 }
 
 .copy-folio-btn {
@@ -269,7 +260,7 @@ body.light-mode .header-titles .subtitle {
     font-size: 14px;
     font-weight: 800;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap; 
     display: flex;
     align-items: center;
@@ -278,14 +269,18 @@ body.light-mode .header-titles .subtitle {
 
 .copy-folio-btn:hover {
     background-color: var(--primary-hover); 
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 121, 198, 0.3);
+}
+
+.copy-folio-btn:active {
+    transform: scale(0.92);
 }
 
 .copy-folio-btn.copied {
     background-color: var(--success-color);
     color: var(--bg-color);
     box-shadow: 0 4px 12px rgba(80, 250, 123, 0.3);
+    transform: scale(1.05);
 }
 
 /* ==========================================================
@@ -320,21 +315,28 @@ thead th {
     border-bottom: 2px solid var(--border-color);
 }
 
+/* Animación en cascada para filas */
+tbody tr {
+    animation: fadeInUp 0.4s ease forwards;
+    opacity: 0;
+    transition: background-color 0.2s ease;
+}
+
+tbody tr:nth-child(1) { animation-delay: 0.05s; }
+tbody tr:nth-child(2) { animation-delay: 0.10s; }
+tbody tr:nth-child(3) { animation-delay: 0.15s; }
+tbody tr:nth-child(4) { animation-delay: 0.20s; }
+tbody tr:nth-child(5) { animation-delay: 0.25s; }
+
 tbody td {
     padding: 16px 20px;
     border-bottom: 1px solid rgba(68, 71, 90, 0.5); 
     vertical-align: middle;
     font-size: 14px;
-    transition: background-color 0.2s ease;
 }
 
-tbody tr:nth-child(even) {
-    background-color: rgba(68, 71, 90, 0.15); 
-}
-
-tbody tr:hover {
-    background-color: var(--surface-hover);
-}
+tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.15); }
+tbody tr:hover { background-color: var(--surface-hover); }
 
 /* Formato por Columnas */
 tbody td:nth-child(1),
@@ -369,27 +371,29 @@ tbody td:nth-child(2) {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    color: #f1fa8c; /* Dracula Yellow */
+    color: #f1fa8c; 
     font-weight: 500;
 }
 
-.center-col {
-    text-align: center;
-}
+.center-col { text-align: center; }
 
-/* Celda Editable */
+/* Celda Editable Neón */
 .editable-cell {
     cursor: text;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     border-radius: 6px;
 }
 
 .editable-cell:focus {
-    outline: 1px solid var(--primary-color);
-    background-color: var(--surface-hover);
-    padding: 12px; 
+    outline: none;
+    background-color: var(--surface-hover) !important;
+    border: 1px solid var(--primary-hover) !important;
+    box-shadow: 0 0 15px rgba(255, 121, 198, 0.2), inset 4px 0 0 var(--primary-hover) !important;
+    transform: scale(1.01);
+    z-index: 5;
+    position: relative;
+    padding: 12px !important; 
     -webkit-line-clamp: unset; 
-    box-shadow: inset 4px 0 0 var(--primary-hover); 
 }
 
 /* ==========================================================
@@ -405,7 +409,7 @@ button.copy-btn {
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -416,13 +420,17 @@ button.copy-btn:hover {
     background-color: var(--surface-hover);
     border-color: var(--primary-hover);
     color: var(--primary-hover);
-    transform: translateY(-1px);
+}
+
+button.copy-btn:active {
+    transform: scale(0.92);
 }
 
 button.copy-btn.copied {
     border-color: var(--success-color);
     color: var(--success-color);
     background-color: rgba(80, 250, 123, 0.1);
+    transform: scale(1.05);
 }
 
 /* Botón flotante Inicio */
@@ -452,10 +460,14 @@ button.copy-btn.copied {
     border-color: var(--primary-color);
 }
 
+.btn-inicio:active {
+    transform: scale(0.95);
+}
+
 .btn-inicio.show { display: flex; }
 
 /* ==========================================================
-   7. LOADER Y SCROLLBAR
+   7. LOADER MULTICOLOR Y SCROLLBAR
    ========================================================== */
 .loading {
     text-align: center;
@@ -465,13 +477,16 @@ button.copy-btn.copied {
 }
 
 .loader {
-    border: 3px solid var(--border-color);
-    border-top: 3px solid var(--primary-hover);
+    border: 3px solid var(--surface-color);
+    border-top: 3px solid var(--primary-color);
+    border-right: 3px solid var(--primary-hover);
+    border-bottom: 3px solid var(--success-color);
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    animation: spin 0.8s linear infinite;
+    width: 30px;
+    height: 30px;
+    animation: spin 0.8s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
     margin: 0 auto 16px auto;
+    filter: drop-shadow(0 0 5px var(--primary-color));
 }
 
 @keyframes spin {
@@ -489,65 +504,50 @@ button.copy-btn.copied {
    Aesthetic: Limpio, Textos definidos, Colores saturados
    ========================================================== */
 body.light-mode {
-    --bg-color: #eef2f6;       /* Gris frío muy claro, elimina el destello del blanco puro */
-    --surface-color: #ffffff;  /* Contenedor en blanco puro para contraste */
-    --surface-hover: #d8ffffa6;  /* Resaltado de fila sutil pero visible */
+    --bg-color: #eef2f6;       
+    --surface-color: #ffffff;  
+    --surface-hover: #d8ffffa6;  
     
-    /* Acentos Vivos y Profundos (NO pastel, para que resalten) */
-    --primary-color: #0284c7;  /* Azul Cerúleo vibrante */
+    --primary-color: #0284c7;  
     --primary-hover: #0369a1;  
     
-    --danger-color: #e11d48;   /* Rojo Carmesí oscuro para el Título (Alerta/Acción) */
-    --success-color: #059669;  /* Verde Esmeralda profundo */
-    --accent-color: #ea580c;   /* Naranja brillante para Folios */
-    --info-color: #4f46e5;     /* Índigo eléctrico para categorías */
+    --danger-color: #e11d48;   
+    --success-color: #059669;  
+    --accent-color: #ea580c;   
+    --info-color: #4f46e5;     
     
-    /* Textos (MÁXIMA LEGIBILIDAD) */
-    --text-main: #0f172a;      /* Slate 900: Casi negro absoluto */
-    --text-muted: #334155;     /* Slate 700: Gris muy oscuro, nunca opaco */
+    --text-main: #0f172a;      
+    --text-muted: #334155;     
     
     --border-color: #cbd5e1;   
     --input-bg: #ffffff;       
 }
 
-/* Ajustes de Sombras para Light Mode */
 body.light-mode .container {
     box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
     border: 1px solid #e2e8f0;
 }
 
-/* Títulos y Header */
-body.light-mode .header-titles h1 {
-    color: var(--danger-color);
-    text-shadow: none;
-}
-body.light-mode .header-titles .subtitle {
-    color: var(--primary-color);
-}
-body.light-mode .theme-btn:hover {
-    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15);
-}
+body.light-mode .header-titles h1 { color: var(--danger-color); text-shadow: none; }
+body.light-mode .header-titles .subtitle { color: var(--primary-color); }
+body.light-mode .theme-btn:hover { box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15); }
 
-/* El Encabezado de Tabla Oscuro (Look Premium/Dashboard) */
 body.light-mode thead th {
-    background-color: #0f172a;  /* Slate 900 */
-    color: #ffffff;             /* Letra blanca pura */
+    background-color: #0f172a; 
+    color: #ffffff;             
     border-bottom: 3px solid var(--primary-color);
 }
 
-/* Detalles de Columnas en Modo Claro */
-body.light-mode tbody td:nth-child(1) { color: var(--danger-color); } /* Tema */
-body.light-mode tbody td:nth-child(2) { color: var(--text-main); font-weight: 600; } /* Subtema */
-body.light-mode tbody td:nth-child(5) { color: var(--success-color); } /* Hashtag */
+body.light-mode tbody td:nth-child(1) { color: var(--danger-color); } 
+body.light-mode tbody td:nth-child(2) { color: var(--text-main); font-weight: 600; } 
+body.light-mode tbody td:nth-child(5) { color: var(--success-color); } 
 
-/* Folio Impecable */
 body.light-mode .folio-field {
-    background-color: #fff7ed; /* Fondo naranja súper suave */
-    color: #c2410c;            /* Texto naranja oscuro sólido */
+    background-color: #fff7ed; 
+    color: #c2410c;            
     border: 2px solid var(--accent-color);
 }
 
-/* Botones de Acción (Alto Impacto) */
 body.light-mode button.copy-btn {
     border: 2px solid var(--primary-color);
     color: var(--primary-color);
@@ -565,9 +565,9 @@ body.light-mode button.copy-btn.copied {
 
 /* Celda Editable Claro */
 body.light-mode .editable-cell:focus {
-    background-color: #ffffff;
-    box-shadow: inset 4px 0 0 var(--primary-color), 0 4px 15px rgba(0,0,0,0.05);
-    outline: 1px solid var(--border-color);
+    background-color: #ffffff !important;
+    box-shadow: inset 4px 0 0 var(--primary-color), 0 4px 15px rgba(0,0,0,0.05) !important;
+    border: 1px solid var(--primary-color) !important;
 }
 
 /* ==========================================================
