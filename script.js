@@ -14,11 +14,15 @@ const btnInicio = document.getElementById('btnInicio');
 const contenedorTabla = document.querySelector('.table-container');
 
 // Mensaje Fijo Llave CDMX
-const MENSAJE_LLAVE = `Es necesario que nos envíe un correo a chat.locatel@cdmx.gob.mx con la siguiente documentación en formato PDF: 
-1.- Identificación oficial vigente (INE, pasaporte, cédula profesional, cartilla del servicio militar, en caso de extranjeros FM2 o FM3). Preferentemente INE por ambos lados 
-2.- Una fotografía del titular de la cuenta Llave CDMX donde sostenga la identificación oficial. (Selfie)  
+const MENSAJE_LLAVE = `EEs necesario que nos envíe un correo a chat.locatel@cdmx.gob.mx con la siguiente documentación en formato PDF: 📧📁
 
-IMPORTANTE: En el ASUNTO del correo deberá colocar el siguiente folio: CHAT-0000-000, mismo que tiene una vigencia de 72 horas. En el CUERPO del correo deberá describir brevemente la complicación que está presentando agregando número telefónico de contacto. La información deberá ser enviada desde una cuenta de correo electrónico a la que tenga acceso en todo momento.`;
+1.- Identificación oficial vigente (INE, pasaporte, cédula profesional, cartilla del servicio militar, en caso de extranjeros FM2 o FM3). Preferentemente INE por ambos lados. 🪪
+
+2.- Una fotografía del titular de la cuenta Llave CDMX donde sostenga la identificación oficial. (Selfie) 🤳📸
+
+⚠️ IMPORTANTE: En el ASUNTO del correo deberá colocar el siguiente folio: CHAT-0000-000, mismo que tiene una vigencia de 72 horas. ⏳ En el CUERPO del correo deberá describir brevemente la complicación que está presentando agregando número telefónico de contacto. 📞 La información deberá ser enviada desde una cuenta de correo electrónico a la que tenga acceso en todo momento. 📑
+
+NOTA: Procure que las imágenes sean legibles para evitar contratiempos en su trámite. ✅`;
 
 // 2. MODO CLARO / OSCURO
 const themeToggle = document.getElementById('themeToggle');
