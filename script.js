@@ -14,7 +14,7 @@ const btnInicio = document.getElementById('btnInicio');
 const contenedorTabla = document.querySelector('.table-container');
 
 // Mensaje Fijo Llave CDMX
-const MENSAJE_LLAVE = `EEs necesario que nos envíe un correo a chat.locatel@cdmx.gob.mx con la siguiente documentación en formato PDF: 📧📁
+const MENSAJE_LLAVE = `Es necesario que nos envíe un correo a chat.locatel@cdmx.gob.mx con la siguiente documentación en formato PDF: 📧📁
 
 1.- Identificación oficial vigente (INE, pasaporte, cédula profesional, cartilla del servicio militar, en caso de extranjeros FM2 o FM3). Preferentemente INE por ambos lados. 🪪
 
