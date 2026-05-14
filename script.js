@@ -277,10 +277,10 @@ if (btnCopiarContacto) {
             textoFinal = `En su Cuenta Llave se encuentran registrados los siguientes medios de contacto 😊, ¿Podría confirmarme si actualmente tiene acceso a ellos? 📩📱\nTeléfono: ${telInput}\nCorreo: ${emailInput}`;
         } 
         else if (telInput !== "" && emailInput === "") {
-            textoFinal = `En su Cuenta Llave, su número celular se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al correo electrónico que se encuentra registrado? 📩\nTeléfono: ${telInput}`;
+            textoFinal = `En su Cuenta Llave, su correo electrónico se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al número celular que se encuentra registrado? 📱\nNúmero de celular: ${telInput}`;
         } 
         else if (emailInput !== "" && telInput === "") {
-            textoFinal = `En su Cuenta Llave, su correo electrónico se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al número celular que se encuentra registrado? 📱\nCorreo: ${emailInput}`;
+            textoFinal = `En su Cuenta Llave, su número celular se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al correo electrónico que se encuentra registrado? 📩\nCorreo: ${emailInput}`;
         } 
         else {
             alert("Por favor, ingresa al menos el teléfono o el correo.");
