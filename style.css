@@ -284,7 +284,7 @@ body.light-mode .header-titles .subtitle {
 }
 
 /* ==========================================================
-   CAJA DE MEDIOS DE CONTACTO (NUEVO)
+   5. CAJA DE MEDIOS DE CONTACTO
    ========================================================== */
 .contact-box {
     display: flex;
@@ -307,7 +307,7 @@ body.light-mode .header-titles .subtitle {
 
 .contact-field:focus {
     outline: none;
-    border-color: var(--info-color); /* Cyan de tu tema */
+    border-color: var(--info-color); 
     box-shadow: 0 0 15px rgba(139, 233, 253, 0.2);
 }
 
@@ -316,14 +316,15 @@ body.light-mode .header-titles .subtitle {
     color: var(--bg-color); 
     border: none;
     border-radius: 8px;
-    padding: 0 18px;
-    height: 100%;
-    min-height: 46px; /* Para igualar la altura de los inputs */
+    padding: 10px 16px; 
     font-size: 14px;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .copy-contact-btn:hover {
@@ -342,19 +343,8 @@ body.light-mode .header-titles .subtitle {
     transform: scale(1.05);
 }
 
-/* Modo Claro para la Caja de Contacto */
-body.light-mode .contact-field {
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-}
-body.light-mode .contact-field:focus {
-    border-color: var(--info-color);
-    box-shadow: 0 0 15px rgba(79, 70, 229, 0.2);
-}
-
-
 /* ==========================================================
-   5. CONTENEDOR Y DISEÑO DE LA TABLA
+   6. CONTENEDOR Y DISEÑO DE LA TABLA
    ========================================================== */
 .table-container {
     overflow-x: auto;
@@ -467,7 +457,7 @@ tbody td:nth-child(2) {
 }
 
 /* ==========================================================
-   6. BOTONES DE ACCIÓN (COPIAR Y SCROLL)
+   7. BOTONES DE ACCIÓN (COPIAR Y SCROLL)
    ========================================================== */
 button.copy-btn {
     background-color: transparent;
@@ -537,7 +527,7 @@ button.copy-btn.copied {
 .btn-inicio.show { display: flex; }
 
 /* ==========================================================
-   7. LOADER MULTICOLOR Y SCROLLBAR
+   8. LOADER MULTICOLOR Y SCROLLBAR
    ========================================================== */
 .loading {
     text-align: center;
@@ -570,7 +560,7 @@ button.copy-btn.copied {
 .table-container::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
 
 /* ==========================================================
-   8. MODO CLARO "HIGH-CONTRAST DASHBOARD"
+   9. MODO CLARO "HIGH-CONTRAST DASHBOARD"
    Aesthetic: Limpio, Textos definidos, Colores saturados
    ========================================================== */
 body.light-mode {
@@ -640,8 +630,18 @@ body.light-mode .editable-cell:focus {
     border: 1px solid var(--primary-color) !important;
 }
 
+/* Modo Claro para la Caja de Contacto */
+body.light-mode .contact-field {
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+body.light-mode .contact-field:focus {
+    border-color: var(--info-color);
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.2);
+}
+
 /* ==========================================================
-   9. RESPONSIVE DESIGN (MÓVILES Y PANTALLAS PEQUEÑAS)
+   10. RESPONSIVE DESIGN (MÓVILES Y PANTALLAS PEQUEÑAS)
    ========================================================== */
 @media (max-width: 1000px) {
     .table-container { zoom: 0.9; }
@@ -654,13 +654,22 @@ body.light-mode .editable-cell:focus {
 
 @media (max-width: 650px) {
     .table-container { zoom: 0.65; }
+    
     .folio-box { width: 100%; }
     .folio-field { flex-grow: 1; }
     .copy-folio-btn { flex-grow: 1; }
-        .contact-box { width: 100%; flex-wrap: wrap; }
-    .contact-field { flex-grow: 1; width: calc(50% - 4px); }
-    .copy-contact-btn { width: 100%; }
-
+    
+    .contact-box { 
+        width: 100%; 
+        flex-wrap: wrap; 
+    }
+    .contact-field { 
+        flex-grow: 1; 
+        width: calc(50% - 4px); 
+    }
+    .copy-contact-btn { 
+        width: 100%; 
+    }
 }
 
 @media (max-width: 450px) {
