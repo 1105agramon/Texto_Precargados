@@ -260,5 +260,58 @@ btnCopiarFolio.addEventListener('click', async () => {
     }
 });
 
+
+// 9. VALIDACIÓN DE MEDIOS DE CONTACTO
+const btnCopiarContacto = document.getElementById('btnCopiarContacto');
+const telefonoInput = document.getElementById('telefonoInput');
+const correoInput = document.getElementById('correoInput');
+
+if (btnCopiarContacto) {
+    btnCopiarContacto.addEventListener('click', async () => {
+        const telInput = telefonoInput.value.trim();
+        const emailInput = correoInput.value.trim();
+        let textoFinal = "";
+
+        // Evaluar los 3 escenarios
+        if (telInput !== "" && emailInput !== "") {
+            textoFinal = `En su Cuenta Llave se encuentran registrados los siguientes medios de contacto 😊, ¿Podría confirmarme si actualmente tiene acceso a ellos? 📩📱\nTeléfono: ${telInput}\nCorreo: ${emailInput}`;
+        } 
+        else if (telInput !== "" && emailInput === "") {
+            textoFinal = `En su Cuenta Llave, su número celular se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al correo electrónico que se encuentra registrado? 📩\nTeléfono: ${telInput}`;
+        } 
+        else if (emailInput !== "" && telInput === "") {
+            textoFinal = `En su Cuenta Llave, su correo electrónico se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al número celular que se encuentra registrado? 📱\nCorreo: ${emailInput}`;
+        } 
+        else {
+            alert("Por favor, ingresa al menos el teléfono o el correo.");
+            return; 
+        }
+
+        try {
+            await navigator.clipboard.writeText(textoFinal);
+            
+            // Animación de éxito consistente con el resto de la app
+            const textoOriginal = btnCopiarContacto.innerText;
+            btnCopiarContacto.innerText = "¡Copiado!";
+            btnCopiarContacto.classList.add('copied');
+
+            // Limpiar los inputs para la siguiente consulta
+            telefonoInput.value = "";
+            correoInput.value = "";
+
+            setTimeout(() => {
+                btnCopiarContacto.innerText = textoOriginal;
+                btnCopiarContacto.classList.remove('copied');
+            }, 1500);
+
+        } catch (err) {
+            console.error('Error al copiar el mensaje de contacto: ', err);
+            alert("No se pudo copiar el texto. Verifica los permisos de tu navegador.");
+        }
+    });
+}
+
+
+
 // Arrancar el programa
 cargarDatos();
