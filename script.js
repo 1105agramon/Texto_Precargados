@@ -261,6 +261,38 @@ btnCopiarFolio.addEventListener('click', async () => {
 });
 
 
+// Funciones auxiliares para enmascarar datos
+function enmascararTelefono(tel) {
+    if (tel.length === 10) {
+        // Toma los primeros 3, agrega **** y luego toma los últimos 3
+        return tel.substring(0, 3) + "****" + tel.substring(7);
+    }
+    return tel; // Si no tiene 10 dígitos, lo deja igual por seguridad
+}
+
+function enmascararCorreo(correo) {
+    const partes = correo.split('@');
+    if (partes.length !== 2) return correo; // Si no tiene el formato correcto, lo deja igual
+
+    const usuario = partes[0];
+    const dominio = partes[1];
+    let usuarioOculto = usuario;
+
+    // Lógica para correos según su longitud antes del @
+    if (usuario.length >= 6) {
+        // Ejemplo: ejemplo -> eje****plo
+        usuarioOculto = usuario.substring(0, 3) + "****" + usuario.substring(usuario.length - 3);
+    } else if (usuario.length >= 3) {
+        // Ejemplo: hola -> h****a
+        usuarioOculto = usuario.substring(0, 1) + "****" + usuario.substring(usuario.length - 1);
+    } else {
+        // Ejemplo: ab -> ****
+        usuarioOculto = "****";
+    }
+
+    return usuarioOculto + "@" + dominio;
+}
+
 // 9. VALIDACIÓN DE MEDIOS DE CONTACTO
 const btnCopiarContacto = document.getElementById('btnCopiarContacto');
 const telefonoInput = document.getElementById('telefonoInput');
@@ -272,15 +304,19 @@ if (btnCopiarContacto) {
         const emailInput = correoInput.value.trim();
         let textoFinal = "";
 
-        // Evaluar los 3 escenarios
+        // Enmascaramos los datos si existen
+        const telOculto = telInput !== "" ? enmascararTelefono(telInput) : "";
+        const emailOculto = emailInput !== "" ? enmascararCorreo(emailInput) : "";
+
+        // Evaluar los 3 escenarios usando las variables ocultas (telOculto y emailOculto)
         if (telInput !== "" && emailInput !== "") {
-            textoFinal = `En su Cuenta Llave se encuentran registrados los siguientes medios de contacto 😊, ¿Podría confirmarme si actualmente tiene acceso a ellos? 📩📱\nTeléfono: ${telInput}\nCorreo: ${emailInput}`;
+            textoFinal = `En su Cuenta Llave se encuentran registrados los siguientes medios de contacto 😊, ¿Podría confirmarme si actualmente tiene acceso a ellos? 📩📱\nTeléfono: ${telOculto}\nCorreo: ${emailOculto}`;
         } 
         else if (telInput !== "" && emailInput === "") {
-            textoFinal = `En su Cuenta Llave, su correo electrónico se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al número celular que se encuentra registrado? 📱\nNúmero de celular: ${telInput}`;
+            textoFinal = `En su Cuenta Llave, su correo electrónico se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al número celular que se encuentra registrado? 📱\nNúmero de celular: ${telOculto}`;
         } 
         else if (emailInput !== "" && telInput === "") {
-            textoFinal = `En su Cuenta Llave, su número celular se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al correo electrónico que se encuentra registrado? 📩\nCorreo: ${emailInput}`;
+            textoFinal = `En su Cuenta Llave, su número celular se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al correo electrónico que se encuentra registrado? 📩\nCorreo: ${emailOculto}`;
         } 
         else {
             alert("Por favor, ingresa al menos el teléfono o el correo.");
