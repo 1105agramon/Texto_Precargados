@@ -160,39 +160,55 @@ clearBtn.addEventListener('click', () => {
     searchInput.focus();
 });
 
-// 7. FUNCIONES DE COPIADO
+// 7. FUNCIONES DE COPIADO ACTUALIZADAS (CON SOPORTE PARA IMÁGENES HTML)
 async function copiarDesdeFila(fila, event) {
     if (event && event.target.classList.contains('text-col')) {
         return; // Permite editar sin copiar
     }
 
-    try {
-        const boton = fila.querySelector('.copy-btn');
-        const celdaTexto = fila.querySelector('.text-col');
-        let textoExtraido = celdaTexto.innerText; 
-        
-        const valorFolio = campoFolioHeader.value.trim();
+    const boton = fila.querySelector('.copy-btn');
+    const celdaTexto = fila.querySelector('.text-col');
+    
+    // Obtenemos el HTML (para detectar imágenes) y el texto plano
+    let textoHTML = celdaTexto.innerHTML;
+    let textoPlano = celdaTexto.innerText; 
+    const valorFolio = campoFolioHeader.value.trim();
 
-        if (textoExtraido.includes("0000-000") && valorFolio !== "") {
-            textoExtraido = textoExtraido.replace(/0000-000/g, valorFolio);
+    // Reemplazo de folio
+    if (textoHTML.includes("0000-000") && valorFolio !== "") {
+        textoHTML = textoHTML.replace(/0000-000/g, valorFolio);
+        textoPlano = textoPlano.replace(/0000-000/g, valorFolio);
+    }
+
+    try {
+        const contieneImagen = textoHTML.includes('<img');
+
+        if (contieneImagen) {
+            // Copiado con Blob para soportar imágenes HTML
+            const type = "text/html";
+            const blobHTML = new Blob([textoHTML], { type });
+            const blobText = new Blob([textoPlano], { type: "text/plain" });
+            const data = [new ClipboardItem({ 
+                [type]: blobHTML, 
+                "text/plain": blobText 
+            })];
+            await navigator.clipboard.write(data);
+        } else {
+            // Si es solo texto normal
+            await navigator.clipboard.writeText(textoPlano);
         }
         
-        await navigator.clipboard.writeText(textoExtraido);
-        
+        // Animación de copiado
         const textoOriginal = boton.innerText;
         boton.innerText = "¡Copiado!";
         boton.classList.add('copied');
 
-
         // --- EFECTO DE ILUMINACIÓN INTELIGENTE ---
         if (document.body.classList.contains('light-mode')) {
-            // Si está en Modo Claro: Destello en Azul Cerúleo
             fila.style.backgroundColor = "rgba(4, 255, 109, 0.4)"; 
         } else {
-            // Si está en Modo Oscuro: Destello en Morado Drácula
             fila.style.backgroundColor = "rgba(62, 228, 112, 0.44)"; 
         }
-
 
         setTimeout(() => {
             boton.innerText = textoOriginal;
@@ -202,25 +218,47 @@ async function copiarDesdeFila(fila, event) {
         
     } catch (err) {
         console.error('Error al copiar desde fila: ', err);
+        // Plan B: Intentar copiar texto plano si el ClipboardItem falla
+        await navigator.clipboard.writeText(textoPlano).catch(e => console.error("Fallo definitivo: ", e));
     }
 }
 
 async function copiarAlPortapapeles(boton, event) {
     if(event) event.stopPropagation();
 
-    try {
-        const fila = boton.closest('tr');
-        const celdaTexto = fila.querySelector('.text-col');
-        let textoExtraido = celdaTexto.innerText;
-        
-        const valorFolio = campoFolioHeader.value.trim();
+    const fila = boton.closest('tr');
+    const celdaTexto = fila.querySelector('.text-col');
+    
+    // Obtenemos el HTML y el texto plano
+    let textoHTML = celdaTexto.innerHTML;
+    let textoPlano = celdaTexto.innerText;
+    const valorFolio = campoFolioHeader.value.trim();
 
-        if (textoExtraido.includes("0000-000") && valorFolio !== "") {
-            textoExtraido = textoExtraido.replace(/0000-000/g, valorFolio);
+    // Reemplazo de folio
+    if (textoHTML.includes("0000-000") && valorFolio !== "") {
+        textoHTML = textoHTML.replace(/0000-000/g, valorFolio);
+        textoPlano = textoPlano.replace(/0000-000/g, valorFolio);
+    }
+
+    try {
+        const contieneImagen = textoHTML.includes('<img');
+
+        if (contieneImagen) {
+            // Copiado con Blob para soportar imágenes HTML
+            const type = "text/html";
+            const blobHTML = new Blob([textoHTML], { type });
+            const blobText = new Blob([textoPlano], { type: "text/plain" });
+            const data = [new ClipboardItem({ 
+                [type]: blobHTML, 
+                "text/plain": blobText 
+            })];
+            await navigator.clipboard.write(data);
+        } else {
+            // Texto normal
+            await navigator.clipboard.writeText(textoPlano);
         }
         
-        await navigator.clipboard.writeText(textoExtraido);
-        
+        // Animación de copiado
         const textoOriginal = boton.innerText;
         boton.innerText = "¡Copiado!";
         boton.classList.add('copied');
@@ -229,8 +267,11 @@ async function copiarAlPortapapeles(boton, event) {
             boton.innerText = textoOriginal;
             boton.classList.remove('copied');
         }, 1500);
+
     } catch (err) {
         console.error('Error al copiar: ', err);
+        // Plan B: Intentar copiar texto plano si el ClipboardItem falla
+        await navigator.clipboard.writeText(textoPlano).catch(e => console.error("Fallo definitivo: ", e));
     }
 }
 
@@ -346,8 +387,6 @@ if (btnCopiarContacto) {
         }
     });
 }
-
-
 
 // Arrancar el programa
 cargarDatos();
