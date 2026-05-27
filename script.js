@@ -396,20 +396,33 @@ const horaInput = document.getElementById('horaInput');
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxZAMvGF2MyLv7k_Ad1-of_XSIVfyV-XV8HtNKCeVqaD3EnIfGGK1Hrr__1f2ITk4-rdg/exec'; 
 
 // --- NUEVA FUNCIÓN PARA LEER LA HORA ---
+// --- NUEVA FUNCIÓN PARA LEER LA HORA (CON DIAGNÓSTICO) ---
 async function obtenerHoraGuardada() {
     if (!horaInput) return;
     
     try {
-        // Hacemos una petición GET a tu Web App
+        console.log("Intentando obtener la hora...");
         const respuesta = await fetch(WEB_APP_URL);
-        const datos = await respuesta.json();
+        
+        // Verificamos si la respuesta de red fue exitosa
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP: ${respuesta.status}`);
+        }
+
+        const textoPuro = await respuesta.text();
+        console.log("Respuesta de Google:", textoPuro); // Para ver qué nos manda Google
+        
+        const datos = JSON.parse(textoPuro);
         
         if (datos.status === "success" && datos.hora) {
-            // Asignamos la hora recuperada de Excel al input de la web
             horaInput.value = datos.hora;
+        } else {
+            console.warn("Google respondió, pero sin hora válida:", datos);
         }
+        
     } catch (error) {
-        console.error("Error al obtener la hora de Google Sheets:", error);
+        console.error("Error exacto al leer Google Sheets:", error);
+        // Si tienes problemas de CORS, esto te lo dirá en la consola del navegador
     }
 }
 
