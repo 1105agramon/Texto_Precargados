@@ -393,7 +393,7 @@ const btnGuardarHora = document.getElementById('btnGuardarHora');
 const horaInput = document.getElementById('horaInput');
 
 // Reemplaza esta URL con la que te dará Google Apps Script en el Paso 2
-const WEB_APP_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUÍ'; 
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxZAMvGF2MyLv7k_Ad1-of_XSIVfyV-XV8HtNKCeVqaD3EnIfGGK1Hrr__1f2ITk4-rdg/exec'; 
 
 if (btnGuardarHora) {
     btnGuardarHora.addEventListener('click', async () => {
