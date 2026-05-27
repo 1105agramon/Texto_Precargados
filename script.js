@@ -388,5 +388,56 @@ if (btnCopiarContacto) {
     });
 }
 
+// 10. ENVIAR HORA A GOOGLE SHEETS
+const btnGuardarHora = document.getElementById('btnGuardarHora');
+const horaInput = document.getElementById('horaInput');
+
+// Reemplaza esta URL con la que te dará Google Apps Script en el Paso 2
+const WEB_APP_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUÍ'; 
+
+if (btnGuardarHora) {
+    btnGuardarHora.addEventListener('click', async () => {
+        const horaValor = horaInput.value;
+
+        if (!horaValor) {
+            alert("Por favor, selecciona una hora primero.");
+            return;
+        }
+
+        // Deshabilitar botón temporalmente
+        btnGuardarHora.disabled = true;
+        btnGuardarHora.innerText = "⏳";
+
+        try {
+            // Enviamos la hora mediante una petición POST (vía URLSearchParams para evitar problemas de CORS simples)
+            const respuestas = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Necesario para Apps Script ejecutado desde webs externas locales
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'hora': horaValor
+                })
+            });
+
+            // Al usar 'no-cors' la respuesta es opaca, asumimos éxito si no lanza error
+            btnGuardarHora.innerText = "✅";
+            alert(`Hora ${horaValor} enviada correctamente a Google Sheets.`);
+            
+            setTimeout(() => {
+                btnGuardarHora.innerText = "💾";
+                btnGuardarHora.disabled = false;
+            }, 2000);
+
+        } catch (error) {
+            console.error("Error al enviar la hora:", error);
+            alert("Hubo un error al guardar la hora.");
+            btnGuardarHora.innerText = "💾";
+            btnGuardarHora.disabled = false;
+        }
+    });
+}
+
 // Arrancar el programa
 cargarDatos();
