@@ -395,6 +395,24 @@ const horaInput = document.getElementById('horaInput');
 // Reemplaza esta URL con la que te dará Google Apps Script en el Paso 2
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxZAMvGF2MyLv7k_Ad1-of_XSIVfyV-XV8HtNKCeVqaD3EnIfGGK1Hrr__1f2ITk4-rdg/exec'; 
 
+// --- NUEVA FUNCIÓN PARA LEER LA HORA ---
+async function obtenerHoraGuardada() {
+    if (!horaInput) return;
+    
+    try {
+        // Hacemos una petición GET a tu Web App
+        const respuesta = await fetch(WEB_APP_URL);
+        const datos = await respuesta.json();
+        
+        if (datos.status === "success" && datos.hora) {
+            // Asignamos la hora recuperada de Excel al input de la web
+            horaInput.value = datos.hora;
+        }
+    } catch (error) {
+        console.error("Error al obtener la hora de Google Sheets:", error);
+    }
+}
+
 if (btnGuardarHora) {
     btnGuardarHora.addEventListener('click', async () => {
         const horaValor = horaInput.value;
@@ -441,3 +459,4 @@ if (btnGuardarHora) {
 
 // Arrancar el programa
 cargarDatos();
+obtenerHoraGuardada();
