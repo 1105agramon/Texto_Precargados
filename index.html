@@ -21,26 +21,28 @@
                     <input type="time" id="horaInput" class="time-field" style="padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(150, 150, 150, 0.4); background: transparent; color: inherit; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; cursor: pointer; transition: border-color 0.3s ease;">
                     <button id="btnGuardarHora" class="theme-btn" style="padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(150, 150, 150, 0.4); background: transparent; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" title="Guardar hora en Sheets">💾</button>
                 </div>
-                <button id="themeToggle" class="theme-btn"> <span class="icon">🌙</span> </button>
+                
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="https://1105agramon.github.io/Llamadas-Locatel/" target="_blank" class="theme-btn" style="text-decoration: none; padding: 6px 15px; border-radius: 8px; border: 1px solid rgba(150, 150, 150, 0.4); background: transparent; color: inherit; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" title="Abrir Generador de Guiones Locatel">
+                        📞 Llamadas
+                    </a>
+                    <button id="themeToggle" class="theme-btn"> <span class="icon">🌙</span> </button>
+                </div>
             </div>
             
-            <!-- Contenedor principal agrupado -->
             <div class="controls-container">
                 
-                <!-- 1. Caja del buscador -->
                 <div class="search-box">
                     <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     <input type="text" id="searchInput" placeholder="Buscar por tema, subtema o categoría">
                     <button id="clearSearch" class="clear-btn" title="Limpiar búsqueda">&times;</button>
                 </div>
 
-                <!-- 2. Caja del Folio -->
                 <div class="folio-box">
                     <input type="text" id="folioInput" placeholder="Folio" class="folio-field">
                     <button id="btnCopiarFolio" class="copy-folio-btn">Copiar Folio</button>
                 </div>
 
-                <!-- 3. NUEVO: Caja de Medios de Contacto -->
                 <div class="contact-box">
                     <input type="text" id="correoInput" placeholder="📧 Correo electrónico" class="contact-field">
                     <input type="text" id="telefonoInput" placeholder="📱 Teléfono" class="contact-field">
@@ -48,7 +50,6 @@
                 </div>
             </div>
 
-            <!-- Botón flotante -->
             <button id="btnInicio" class="btn-inicio" title="Volver al inicio">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
             </button>
