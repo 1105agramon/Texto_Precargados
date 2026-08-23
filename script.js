@@ -389,12 +389,11 @@ if (btnCopiarContacto) {
 }
 
 // 10. ENVIAR HORA A GOOGLE SHEETS
+// 10. ENVIAR HORA A GOOGLE SHEETS
 const btnGuardarHora = document.getElementById('btnGuardarHora');
 const horaInput = document.getElementById('horaInput');
 
-// Reemplaza esta URL con la que te dará Google Apps Script en el Paso 2
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxZAMvGF2MyLv7k_Ad1-of_XSIVfyV-XV8HtNKCeVqaD3EnIfGGK1Hrr__1f2ITk4-rdg/exec'; 
-
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxEB6MUC7ZCIMkactyDxJtL3nnRhguppn9OHDo1IPw3DalhqU1jKF9uCeQXq6afCJ-RWw/exec?accion=hora';
 // --- NUEVA FUNCIÓN PARA LEER LA HORA ---
 // --- NUEVA FUNCIÓN PARA LEER LA HORA (CON DIAGNÓSTICO) ---
 async function obtenerHoraGuardada() {
@@ -469,6 +468,140 @@ if (btnGuardarHora) {
         }
     });
 }
+
+// ==========================================================
+// 11. LÓGICA DEL MENÚ LATERAL Y CONTEO DE DESPEDIDAS
+// ==========================================================
+
+// ==========================================================
+// 11. LÓGICA DEL MENÚ LATERAL Y CONTEO DE DESPEDIDAS
+// ==========================================================
+
+const API_CONTEO_URL = 'https://script.google.com/macros/s/AKfycbxEB6MUC7ZCIMkactyDxJtL3nnRhguppn9OHDo1IPw3DalhqU1jKF9uCeQXq6afCJ-RWw/exec?accion=conteo2';
+
+const btnMenuDespedidas = document.getElementById('btnMenuDespedidas');
+const sideMenuDespedidas = document.getElementById('sideMenuDespedidas');
+const closeMenuBtn = document.getElementById('closeMenuBtn');
+const searchHashtag = document.getElementById('searchHashtag');
+const hashtagButtonsContainer = document.getElementById('hashtagButtonsContainer');
+
+const textoActivo = `Por último, nos encantaría conocer su experiencia con nuestro servicio a través de una breve encuesta de satisfacción:  https://forms.gle/iXN2fQZvXikwM6HTA 📊📈\nGracias por utilizar los servicios de *0311Locatel, le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
+
+const textoInactivo = `Debido a inactividad, el chat de *0311 LOCATEL finaliza su sesión, le recordamos que también podemos brindarle información a través de redes sociales, en Facebook como Locatel Ciudad de México y en Twitter como @locatel_mx o marcando al *0311 las 24 horas del día los 365 días del año, si desea realizar un reporte sobre servicios en la CDMX puede realizarlo por medio de https://311locatel.cdmx.gob.mx/ Le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
+
+// Ahora la lista iniciará vacía y se llenará sola
+let listaHashtags = []; 
+
+
+// --- NUEVA FUNCIÓN: LEER LAS COLUMNAS DESDE APPS SCRIPT ---
+async function cargarHashtagsDesdeExcel() {
+    try {
+        // Hacemos un fetch simple (GET) a tu URL de Apps Script
+        const respuesta = await fetch(API_CONTEO_URL);
+        const datos = await respuesta.json();
+        
+        if (datos.status === "success" && datos.hashtags) {
+            listaHashtags = datos.hashtags;
+            renderHashtags(); // Dibujamos los botones
+        } else {
+            console.error("Error desde Apps Script:", datos.mensaje);
+            hashtagButtonsContainer.innerHTML = `<p style="color:var(--text-muted); text-align:center; font-size:14px;">No se encontraron etiquetas.</p>`;
+        }
+    } catch (error) {
+        console.error("Error de conexión al cargar hashtags:", error);
+        hashtagButtonsContainer.innerHTML = `<p style="color:var(--danger-color); text-align:center; font-size:14px;">Error de conexión.</p>`;
+    }
+}
+
+// 1. Abrir y Cerrar el menú lateral
+if (btnMenuDespedidas && sideMenuDespedidas) {
+    btnMenuDespedidas.addEventListener('click', () => {
+        sideMenuDespedidas.classList.add('open');
+        // Actualiza los botones cada vez que abres el menú
+        cargarHashtagsDesdeExcel(); 
+    });
+}
+if (closeMenuBtn) {
+    closeMenuBtn.addEventListener('click', () => {
+        sideMenuDespedidas.classList.remove('open');
+    });
+}
+
+// 2. Función principal: Crear los botones y manejar el clic
+function renderHashtags(filtro = "") {
+    hashtagButtonsContainer.innerHTML = "";
+    
+    const filtrados = listaHashtags.filter(h => h.toLowerCase().includes(filtro.toLowerCase()));
+    
+    if(filtrados.length === 0) {
+        hashtagButtonsContainer.innerHTML = `<p style="text-align:center; color: var(--text-muted); font-size:14px;">No se encontraron etiquetas.</p>`;
+        return;
+    }
+
+    filtrados.forEach(hashtag => {
+        const btn = document.createElement('button');
+        btn.className = 'hashtag-btn';
+        btn.innerHTML = `<span>${hashtag}</span> <span style="font-size: 14px; opacity: 0.7;">📋</span>`;
+        
+        btn.addEventListener('click', async () => {
+            // Leemos el estado del switch (Activo / Inactivo)
+            let estadoSeleccionado = document.querySelector('input[name="estadoDespedida"]:checked').value;
+            
+            // 🔥 REGLA ESTRICTA: Si es #INACTIVIDAD, ignoramos el menú y forzamos inactivo
+            if (hashtag === "#INACTIVIDAD") {
+                estadoSeleccionado = "inactivo";
+            }
+
+            // Seleccionamos el texto según el estado final dictado
+            let textoFinal = estadoSeleccionado === "activo" ? textoActivo : textoInactivo;
+            
+            // Reemplazamos el comodín por el hashtag clickeado
+            textoFinal = textoFinal.replace('#LAPALABRADELBOTON', hashtag);
+            
+            try {
+                // Copiamos al portapapeles
+                await navigator.clipboard.writeText(textoFinal);
+                
+                // Animación visual verde de copiado
+                btn.classList.add('copied');
+                btn.innerHTML = `<span>¡Copiado!</span> <span>✅</span>`;
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = `<span>${hashtag}</span> <span style="font-size: 14px; opacity: 0.7;">📋</span>`;
+                }, 1500);
+
+                // Mandamos el hashtag y el estado (activo/inactivo) al Excel de fondo
+                fetch(API_CONTEO_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 
+                        'hashtag': hashtag,
+                        'estado': estadoSeleccionado // Se envía la variable extra
+                    })
+                }).then(() => console.log(`Clic registrado: ${hashtag} en columna ${estadoSeleccionado}`))
+                  .catch(e => console.error("Error al registrar en Sheets:", e));
+
+            } catch (err) {
+                console.error('Error al copiar al portapapeles:', err);
+                alert("Hubo un problema al copiar el texto. Verifica los permisos.");
+            }
+        });
+        
+        hashtagButtonsContainer.appendChild(btn);
+    });
+}
+
+// 3. Conectar el buscador interno del menú
+if (searchHashtag) {
+    searchHashtag.addEventListener('input', (e) => {
+        renderHashtags(e.target.value.trim());
+    });
+}
+
+
+// 4. Cargamos todo por primera vez al entrar a la página
+cargarHashtagsDesdeExcel();
 
 // Arrancar el programa
 cargarDatos();
