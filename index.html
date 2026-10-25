@@ -65,6 +65,12 @@
                     <a href="https://1105agramon.github.io/Llamadas-Locatel/" target="_blank" class="theme-btn" style="text-decoration: none; padding: 6px 15px; border-radius: 8px; border: 1px solid rgba(150, 150, 150, 0.4); background: transparent; color: inherit; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" title="Abrir Generador de Guiones Locatel">
                         📞 Llamadas
                     </a>
+                    
+                    <!-- NUEVO BOTÓN: Módulo de Métricas -->
+                    <a href="metricas.html" target="_blank" class="theme-btn" style="text-decoration: none; padding: 6px 15px; border-radius: 8px; border: 1px solid rgba(150, 150, 150, 0.4); background: transparent; color: inherit; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" title="Ver métricas de Hashtags">
+                        📊 Métricas
+                    </a>
+
                     <button id="themeToggle" class="theme-btn"> <span class="icon">🌙</span> </button>
                 </div>
             </div>
@@ -94,14 +100,26 @@
             </button>
         </header>
 
-        <!-- Formulario CRUD para Agregar Plantilla (NUEVO) -->
-        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: var(--surface-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
-            <input type="text" id="nuevoTema" placeholder="Tema" class="contact-field" style="width: 120px;">
-            <input type="text" id="nuevoSubtema" placeholder="Subtema" class="contact-field" style="width: 120px;">
-            <input type="text" id="nuevaCategoria" placeholder="Categoría" class="contact-field" style="width: 120px;">
-            <input type="text" id="nuevoTexto" placeholder="Texto de la respuesta..." class="contact-field" style="flex: 1; min-width: 200px;">
-            <input type="text" id="nuevoHashtagPlantilla" placeholder="#HASHTAG" class="contact-field" style="width: 100px;">
-            <button id="btnAgregarPlantilla" class="copy-btn" style="background-color: var(--primary-color); color: var(--bg-color);">➕ Agregar</button>
+        <!-- Contenedor del Formulario CRUD Plegable (ACORDEÓN) -->
+        <div style="margin-bottom: 15px; background: var(--surface-color); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden;">
+            
+            <!-- Botón para Minimizar/Maximizar -->
+            <div id="toggleCrudBtn" style="padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15); font-weight: 600; color: var(--primary-color); transition: background 0.2s;">
+                <span>📝 Agregar Nueva Respuesta</span>
+                <span id="crudToggleIcon">▼</span>
+            </div>
+            
+            <!-- Cuerpo del formulario (Oculto por defecto) -->
+            <div id="crudFormBody" style="display: none; padding: 15px; border-top: 1px solid var(--border-color);">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="nuevoTema" placeholder="Tema" class="contact-field" style="width: 120px;">
+                    <input type="text" id="nuevoSubtema" placeholder="Subtema" class="contact-field" style="width: 120px;">
+                    <input type="text" id="nuevaCategoria" placeholder="Categoría" class="contact-field" style="width: 120px;">
+                    <input type="text" id="nuevoTexto" placeholder="Texto de la respuesta..." class="contact-field" style="flex: 1; min-width: 200px;">
+                    <input type="text" id="nuevoHashtagPlantilla" placeholder="#HASHTAG" class="contact-field" style="width: 100px;">
+                    <button id="btnAgregarPlantilla" class="copy-btn" style="background-color: var(--primary-color); color: var(--bg-color);">➕ Agregar</button>
+                </div>
+            </div>
         </div>
 
         <div class="table-container">
