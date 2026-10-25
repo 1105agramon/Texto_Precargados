@@ -529,6 +529,47 @@ window.eliminarPlantilla = async function(id, event) {
     }
 }
 
+// --- UPDATE: Editar los metadatos de la fila ---
+window.editarRegistro = async function(id, event) {
+    if (event) event.stopPropagation(); // Evita que se copie el texto al hacer clic en el lápiz
+    
+    const item = datosGlobales.find(d => d.id === id);
+    if (!item) return;
+
+    // Pedimos los nuevos valores mostrando los actuales por defecto
+    const nuevoTema = prompt("Edita el Tema:", item.tema);
+    if (nuevoTema === null) return; 
+
+    const nuevoSubtema = prompt("Edita el Subtema:", item.subtema);
+    if (nuevoSubtema === null) return;
+
+    const nuevaCategoria = prompt("Edita la Categoría:", item.categoria);
+    if (nuevaCategoria === null) return;
+
+    let nuevoHashtag = prompt("Edita el Hashtag:", item.hashtag);
+    if (nuevoHashtag === null) return;
+
+    // Formatear hashtag automáticamente
+    nuevoHashtag = nuevoHashtag.trim().toUpperCase();
+    if (nuevoHashtag && !nuevoHashtag.startsWith('#') && nuevoHashtag !== "NA") {
+        nuevoHashtag = '#' + nuevoHashtag;
+    }
+
+    try {
+        await updateDoc(doc(db, "plantillas_respuestas", id), {
+            tema: nuevoTema.trim(),
+            subtema: nuevoSubtema.trim(),
+            categoria: nuevaCategoria.trim(),
+            hashtag: nuevoHashtag
+        });
+        
+        cargarDatos(); // Recargar la tabla para mostrar los cambios
+    } catch (error) {
+        console.error("Error al actualizar el registro:", error);
+        alert("No se pudo actualizar la información.");
+    }
+}
+
 // ==========================================================
 // 11. LÓGICA DEL MENÚ LATERAL Y CRUD DE HASHTAGS (FIREBASE)
 // ==========================================================
