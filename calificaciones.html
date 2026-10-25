@@ -17,7 +17,7 @@
         <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px;">
             <div class="header-titles">
                 <h1>⭐ Calificaciones de Chat</h1>
-                <p class="subtitle">Registros agrupados por corte con promedio automático</p>
+                <p class="subtitle">Agrega datos a una tabla existente o crea una nueva</p>
             </div>
             
             <div>
@@ -31,12 +31,22 @@
         <div style="background: var(--surface-color); border-radius: 8px; border: 1px solid var(--border-color); padding: 15px; margin-bottom: 20px;">
             <div style="margin-bottom: 10px; font-weight: 600; color: var(--primary-color);">📝 Agregar Nuevo Registro</div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <input type="text" id="nuevoCorte" placeholder="Ej: Tabla_1, Octubre..." class="contact-field" style="width: 150px;" title="Nombre del grupo/corte para promediar">
-                <input type="number" id="nuevaSemana" placeholder="Semana (Ej: 1)" class="contact-field" style="width: 120px;">
-                <input type="text" id="nuevaFecha" placeholder="Fecha (Ej: 1 al 5 Jun)" class="contact-field" style="flex: 1; min-width: 150px;">
-                <input type="number" id="nuevoChatCal" placeholder="Chat Calif (Ej: 88)" class="contact-field" style="width: 150px;">
-                <input type="number" step="0.01" id="nuevaCalGen" placeholder="Calif Gral (Ej: 9.54)" class="contact-field" style="width: 150px;">
-                <input type="text" id="nuevaPosicion" placeholder="Posición (Ej: 2°)" class="contact-field" style="width: 120px;">
+                
+                <!-- Selector de Tabla o Crear Nueva -->
+                <select id="selectCorte" class="contact-field" style="width: 180px; cursor: pointer;">
+                    <option value="">-- Seleccionar Tabla --</option>
+                    <option value="nuevo">➕ Crear nueva tabla...</option>
+                </select>
+
+                <!-- Input para nueva tabla (oculto por defecto) -->
+                <input type="text" id="nuevoCorteInput" placeholder="Nombre de la nueva tabla..." class="contact-field" style="width: 180px; display: none;">
+
+                <input type="number" id="nuevaSemana" placeholder="Semana (Ej: 1)" class="contact-field" style="width: 110px;">
+                <input type="text" id="nuevaFecha" placeholder="Fecha (Ej: 1 al 5 Jun)" class="contact-field" style="flex: 1; min-width: 140px;">
+                <input type="number" id="nuevoChatCal" placeholder="Chat Calif (Ej: 88)" class="contact-field" style="width: 130px;">
+                <input type="number" step="0.01" id="nuevaCalGen" placeholder="Calif Gral (Ej: 9.54)" class="contact-field" style="width: 130px;">
+                <input type="text" id="nuevaPosicion" placeholder="Posición (Ej: 2°)" class="contact-field" style="width: 100px;">
+                
                 <button id="btnAgregarCalificacion" class="copy-btn" style="background-color: var(--primary-color); color: var(--bg-color); padding: 12px 15px;">➕ Agregar</button>
             </div>
         </div>
