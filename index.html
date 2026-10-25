@@ -37,6 +37,12 @@
                 <input type="text" id="searchHashtag" placeholder="🔍 Buscar etiqueta...">
             </div>
 
+            <!-- Controles CRUD Hashtags (NUEVO) -->
+            <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                <input type="text" id="nuevoHashtagInput" placeholder="Nuevo #HASHTAG..." style="flex:1; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 14px; outline: none; text-transform: uppercase;">
+                <button id="btnAgregarHashtag" class="theme-btn" style="padding: 0 15px; margin: 0; display: flex; align-items: center; justify-content: center; font-size: 16px;" title="Agregar Hashtag">➕</button>
+            </div>
+
             <!-- Contenedor dinámico de botones -->
             <div id="hashtagButtonsContainer" class="hashtag-container">
                 <!-- Se llenará con JavaScript -->
@@ -88,6 +94,16 @@
             </button>
         </header>
 
+        <!-- Formulario CRUD para Agregar Plantilla (NUEVO) -->
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: var(--surface-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <input type="text" id="nuevoTema" placeholder="Tema" class="contact-field" style="width: 120px;">
+            <input type="text" id="nuevoSubtema" placeholder="Subtema" class="contact-field" style="width: 120px;">
+            <input type="text" id="nuevaCategoria" placeholder="Categoría" class="contact-field" style="width: 120px;">
+            <input type="text" id="nuevoTexto" placeholder="Texto de la respuesta..." class="contact-field" style="flex: 1; min-width: 200px;">
+            <input type="text" id="nuevoHashtagPlantilla" placeholder="#HASHTAG" class="contact-field" style="width: 100px;">
+            <button id="btnAgregarPlantilla" class="copy-btn" style="background-color: var(--primary-color); color: var(--bg-color);">➕ Agregar</button>
+        </div>
+
         <div class="table-container">
             <table id="dataTable">
                 <thead>
@@ -112,6 +128,7 @@
         </div>
     </div>
 
+    <!-- Recuerda que este type="module" es clave para Firebase v9+ -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
