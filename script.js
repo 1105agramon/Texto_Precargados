@@ -1,6 +1,6 @@
 // 1. IMPORTACIONES DE FIREBASE (Versión CDN para navegadores)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, getDoc, increment, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // 2. TU CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = {
