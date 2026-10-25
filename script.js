@@ -378,7 +378,6 @@ window.copiarDesdeFila = async function(fila, event) {
 
 window.copiarAlPortapapeles = async function(boton, event) {
     if(event) event.stopPropagation();
-    // Reutiliza la misma lógica, emulando el clic en la fila
     copiarDesdeFila(boton.closest('tr'), null);
 }
 
@@ -569,14 +568,21 @@ function renderHashtags(filtro = "") {
                     btn.innerHTML = `<span>${hashtagObj.nombre}</span> <span style="font-size: 14px; opacity: 0.7;">📋</span>`;
                 }, 1500);
 
+                // --- CORRECCIÓN EN EL REGISTRO DE MÉTRICA ---
                 const diaActual = getHoyId();
                 const hashtagRef = doc(db, "metricas_hashtags", diaActual);
+                
                 const updateData = { fecha: diaActual };
-                updateData[`${hashtagObj.nombre}.${estadoSeleccionado}`] = increment(1);
+                // Pasamos un objeto anidado para crear correctamente el Map en Firestore
+                updateData[hashtagObj.nombre] = {
+                    [estadoSeleccionado]: increment(1)
+                };
+                
                 await setDoc(hashtagRef, updateData, { merge: true });
 
             } catch (err) {
-                alert("Hubo un problema al copiar.");
+                alert("Hubo un problema al copiar o guardar la métrica.");
+                console.error(err);
             }
         });
         
