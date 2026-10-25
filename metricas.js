@@ -61,7 +61,8 @@ function renderMetricas(data) {
 
     // Convertimos el objeto de Firebase en un Array para poder ordenarlo alfabéticamente
     const etiquetas = Object.entries(data)
-        .filter(([key]) => key.startsWith('#')) // Filtramos solo las llaves que sean hashtags
+        // 🔥 ESTE ES EL FILTRO CORREGIDO: Evitamos los que se guardaron mal con el punto (.)
+        .filter(([key]) => key.startsWith('#') && !key.includes('.')) 
         .sort((a, b) => a[0].localeCompare(b[0])); // Orden alfabético
 
     etiquetas.forEach(([hashtag, valores]) => {
@@ -83,7 +84,7 @@ function renderMetricas(data) {
     });
 
     if (!hayDatos) {
-        tbodyMetricas.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">El registro existe, pero no tiene conteos de hashtags.</td></tr>`;
+        tbodyMetricas.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">El registro existe, pero no tiene conteos de hashtags válidos.</td></tr>`;
     }
 }
 
