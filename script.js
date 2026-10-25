@@ -447,32 +447,67 @@ if (btnGuardarHora) {
 }
 
 // ==========================================================
-// LÓGICA DEL MENÚ LATERAL Y CONTEO DE DESPEDIDAS EN FIREBASE
+// 11. LÓGICA DEL MENÚ LATERAL Y CRUD DE HASHTAGS (FIREBASE)
 // ==========================================================
 const btnMenuDespedidas = document.getElementById('btnMenuDespedidas');
 const sideMenuDespedidas = document.getElementById('sideMenuDespedidas');
 const closeMenuBtn = document.getElementById('closeMenuBtn');
 const searchHashtag = document.getElementById('searchHashtag');
 const hashtagButtonsContainer = document.getElementById('hashtagButtonsContainer');
+const btnAgregarHashtag = document.getElementById('btnAgregarHashtag');
+const nuevoHashtagInput = document.getElementById('nuevoHashtagInput');
 
 const textoActivo = `Por último, nos encantaría conocer su experiencia con nuestro servicio a través de una breve encuesta de satisfacción:  https://forms.gle/iXN2fQZvXikwM6HTA 📊📈\nGracias por utilizar los servicios de *0311Locatel, le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
-
 const textoInactivo = `Debido a inactividad, el chat de *0311 LOCATEL finaliza su sesión, le recordamos que también podemos brindarle información a través de redes sociales, en Facebook como Locatel Ciudad de México y en Twitter como @locatel_mx o marcando al *0311 las 24 horas del día los 365 días del año, si desea realizar un reporte sobre servicios en la CDMX puede realizarlo por medio de https://311locatel.cdmx.gob.mx/ Le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
 
-function cargarHashtagsDesdeFirebase() {
-    // Extrae los hashtags únicos directamente de la colección principal
-    const hashtagsUnicos = [...new Set(datosGlobales
-        .map(d => d.hashtag)
-        .filter(h => h && h !== "NA" && h.startsWith("#")))
-    ];
-    
-    // Añadimos manualmente el de inactividad que se usa por defecto
-    if(!hashtagsUnicos.includes("#INACTIVIDAD")) hashtagsUnicos.unshift("#INACTIVIDAD");
-    
-    listaHashtags = hashtagsUnicos;
-    renderHashtags(); 
+// Array para almacenar objetos { id, nombre }
+let listaHashtagsFirebase = []; 
+
+// --- READ: Cargar desde la nueva colección ---
+async function cargarHashtagsDesdeFirebase() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "catalogo_hashtags"));
+        listaHashtagsFirebase = [];
+        
+        querySnapshot.forEach((doc) => {
+            listaHashtagsFirebase.push({ id: doc.id, nombre: doc.data().nombre });
+        });
+        
+        // Aseguramos que #INACTIVIDAD siempre exista en el menú
+        if(!listaHashtagsFirebase.some(h => h.nombre === "#INACTIVIDAD")) {
+            listaHashtagsFirebase.unshift({ id: "estatico-inactividad", nombre: "#INACTIVIDAD" });
+        }
+        
+        renderHashtags(); 
+    } catch (error) {
+        console.error("Error al cargar hashtags del CRUD:", error);
+    }
 }
 
+// --- CREATE: Agregar nuevo hashtag ---
+btnAgregarHashtag.addEventListener('click', async () => {
+    let valor = nuevoHashtagInput.value.trim().toUpperCase();
+    if(!valor) return;
+    
+    if(!valor.startsWith('#')) valor = '#' + valor;
+
+    btnAgregarHashtag.disabled = true;
+    btnAgregarHashtag.innerText = "⏳";
+
+    try {
+        await addDoc(collection(db, "catalogo_hashtags"), { nombre: valor });
+        nuevoHashtagInput.value = "";
+        await cargarHashtagsDesdeFirebase(); // Recargamos la lista
+    } catch (error) {
+        console.error("Error al crear hashtag:", error);
+        alert("No se pudo agregar el hashtag.");
+    } finally {
+        btnAgregarHashtag.innerText = "➕";
+        btnAgregarHashtag.disabled = false;
+    }
+});
+
+// Abrir/Cerrar Menú
 if (btnMenuDespedidas && sideMenuDespedidas) {
     btnMenuDespedidas.addEventListener('click', () => {
         sideMenuDespedidas.classList.add('open');
@@ -485,61 +520,108 @@ if (closeMenuBtn) {
     });
 }
 
+// --- RENDERIZAR, UPDATE Y DELETE ---
 function renderHashtags(filtro = "") {
     hashtagButtonsContainer.innerHTML = "";
     
-    const filtrados = listaHashtags.filter(h => h.toLowerCase().includes(filtro.toLowerCase()));
+    const filtrados = listaHashtagsFirebase.filter(h => h.nombre.toLowerCase().includes(filtro.toLowerCase()));
     
     if(filtrados.length === 0) {
         hashtagButtonsContainer.innerHTML = `<p style="text-align:center; color: var(--text-muted); font-size:14px;">No se encontraron etiquetas.</p>`;
         return;
     }
 
-    filtrados.forEach(hashtag => {
+    filtrados.forEach(hashtagObj => {
+        // Contenedor flexible para alinear botones
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.gap = '6px';
+        row.style.alignItems = 'stretch';
+        
+        // Botón principal de copiado
         const btn = document.createElement('button');
         btn.className = 'hashtag-btn';
-        btn.innerHTML = `<span>${hashtag}</span> <span style="font-size: 14px; opacity: 0.7;">📋</span>`;
+        btn.style.flex = '1';
+        btn.style.margin = '0'; // Quitar margen por defecto
+        btn.innerHTML = `<span>${hashtagObj.nombre}</span> <span style="font-size: 14px; opacity: 0.7;">📋</span>`;
         
         btn.addEventListener('click', async () => {
             let estadoSeleccionado = document.querySelector('input[name="estadoDespedida"]:checked').value;
-            
-            // Si es inactividad forzamos el estado a inactivo
-            if (hashtag === "#INACTIVIDAD") {
-                estadoSeleccionado = "inactivo";
-            }
+            if (hashtagObj.nombre === "#INACTIVIDAD") estadoSeleccionado = "inactivo";
 
             let textoFinal = estadoSeleccionado === "activo" ? textoActivo : textoInactivo;
-            textoFinal = textoFinal.replace('#LAPALABRADELBOTON', hashtag);
+            textoFinal = textoFinal.replace('#LAPALABRADELBOTON', hashtagObj.nombre);
             
             try {
                 await navigator.clipboard.writeText(textoFinal);
-                
                 btn.classList.add('copied');
                 btn.innerHTML = `<span>¡Copiado!</span> <span>✅</span>`;
                 setTimeout(() => {
                     btn.classList.remove('copied');
-                    btn.innerHTML = `<span>${hashtag}</span> <span style="font-size: 14px; opacity: 0.7;">📋</span>`;
+                    btn.innerHTML = `<span>${hashtagObj.nombre}</span> <span style="font-size: 14px; opacity: 0.7;">📋</span>`;
                 }, 1500);
 
-                // --- REGISTRAR CONTEO EN FIREBASE ---
+                // Registrar métrica
                 const diaActual = getHoyId();
                 const hashtagRef = doc(db, "metricas_hashtags", diaActual);
-                
-                // Creamos un objeto dinámico para no sobreescribir los otros hashtags del mismo día
                 const updateData = { fecha: diaActual };
-                // Firebase usa notación de punto para modificar propiedades anidadas
-                updateData[`${hashtag}.${estadoSeleccionado}`] = increment(1);
-                
+                updateData[`${hashtagObj.nombre}.${estadoSeleccionado}`] = increment(1);
                 await setDoc(hashtagRef, updateData, { merge: true });
-                console.log(`Clic registrado en Firebase: ${hashtag} -> ${estadoSeleccionado}`);
 
             } catch (err) {
-                console.error('Error al procesar el hashtag:', err);
-                alert("Hubo un problema. Verifica los permisos del portapapeles o la conexión a Firebase.");
+                alert("Hubo un problema al copiar.");
             }
         });
         
-        hashtagButtonsContainer.appendChild(btn);
+        row.appendChild(btn);
+
+        // Si no es el de inactividad por defecto, mostramos botones de Editar y Eliminar
+        if (hashtagObj.id !== "estatico-inactividad") {
+            
+            // Botón UPDATE (Editar)
+            const btnEdit = document.createElement('button');
+            btnEdit.className = 'theme-btn';
+            btnEdit.innerHTML = '✏️';
+            btnEdit.style.padding = '0 12px';
+            btnEdit.style.margin = '0';
+            btnEdit.title = "Editar";
+            btnEdit.addEventListener('click', async () => {
+                let nuevoNombre = prompt("Editar hashtag:", hashtagObj.nombre);
+                if (nuevoNombre && nuevoNombre.trim() !== "") {
+                    nuevoNombre = nuevoNombre.trim().toUpperCase();
+                    if(!nuevoNombre.startsWith('#')) nuevoNombre = '#' + nuevoNombre;
+                    
+                    try {
+                        await updateDoc(doc(db, "catalogo_hashtags", hashtagObj.id), { nombre: nuevoNombre });
+                        cargarHashtagsDesdeFirebase();
+                    } catch (error) {
+                        alert("Error al actualizar.");
+                    }
+                }
+            });
+            row.appendChild(btnEdit);
+
+            // Botón DELETE (Eliminar)
+            const btnDel = document.createElement('button');
+            btnDel.className = 'theme-btn';
+            btnDel.innerHTML = '🗑️';
+            btnDel.style.padding = '0 12px';
+            btnDel.style.margin = '0';
+            btnDel.title = "Eliminar";
+            btnDel.addEventListener('click', async () => {
+                if (confirm(`¿Estás seguro de eliminar el hashtag ${hashtagObj.nombre}?`)) {
+                    try {
+                        await deleteDoc(doc(db, "catalogo_hashtags", hashtagObj.id));
+                        cargarHashtagsDesdeFirebase();
+                    } catch (error) {
+                        alert("Error al eliminar.");
+                    }
+                }
+            });
+            row.appendChild(btnDel);
+        }
+
+        hashtagButtonsContainer.appendChild(row);
     });
 }
 
