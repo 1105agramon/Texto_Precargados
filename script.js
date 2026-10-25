@@ -748,6 +748,27 @@ if (searchHashtag) {
 }
 
 // ==========================================================
+// MINIMIZAR / MAXIMIZAR FORMULARIO CRUD DE PLANTILLAS
+// ==========================================================
+const toggleCrudBtn = document.getElementById('toggleCrudBtn');
+const crudFormBody = document.getElementById('crudFormBody');
+const crudToggleIcon = document.getElementById('crudToggleIcon');
+
+if (toggleCrudBtn && crudFormBody) {
+    toggleCrudBtn.addEventListener('click', () => {
+        if (crudFormBody.style.display === 'none') {
+            crudFormBody.style.display = 'block';
+            crudToggleIcon.innerText = '▲'; // Cambia flecha hacia arriba
+            toggleCrudBtn.style.background = 'rgba(0,0,0,0.3)';
+        } else {
+            crudFormBody.style.display = 'none';
+            crudToggleIcon.innerText = '▼'; // Cambia flecha hacia abajo
+            toggleCrudBtn.style.background = 'rgba(0,0,0,0.15)';
+        }
+    });
+}
+
+// ==========================================================
 // ARRANQUE DEL PROGRAMA
 // ==========================================================
 cargarDatos();
