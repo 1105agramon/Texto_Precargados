@@ -20,8 +20,21 @@ const db = getFirestore(app);
 let calificacionesGlobales = [];
 const tablasContainer = document.getElementById('tablasContainer');
 const btnAgregarCalificacion = document.getElementById('btnAgregarCalificacion');
+const selectCorte = document.getElementById('selectCorte');
+const nuevoCorteInput = document.getElementById('nuevoCorteInput');
 
-// 4. LEER Y AGRUPAR DATOS (READ)
+// 4. MOSTRAR/OCULTAR INPUT DE NUEVA TABLA SEGÚN EL SELECTOR
+selectCorte.addEventListener('change', (e) => {
+    if (e.target.value === 'nuevo') {
+        nuevoCorteInput.style.display = 'block';
+        nuevoCorteInput.focus();
+    } else {
+        nuevoCorteInput.style.display = 'none';
+        nuevoCorteInput.value = '';
+    }
+});
+
+// 5. LEER Y AGRUPAR DATOS (READ)
 async function cargarCalificaciones() {
     try {
         const querySnapshot = await getDocs(collection(db, "calificaciones_chat"));
@@ -41,6 +54,7 @@ async function cargarCalificaciones() {
             });
         });
 
+        actualizarSelectorTablas();
         renderizarTablasAgrupadas();
     } catch (error) {
         console.error("Error al cargar calificaciones:", error);
@@ -48,32 +62,56 @@ async function cargarCalificaciones() {
     }
 }
 
-// 5. DIBUJAR TABLAS Y PROMEDIOS
+// 6. ACTUALIZAR LAS OPCIONES DEL SELECTOR CON LAS TABLAS EXISTENTES
+function actualizarSelectorTablas() {
+    // Guardar selección actual si la hay
+    const valorActual = selectCorte.value;
+
+    // Obtener nombres de tablas únicos
+    const gruposUnicos = [...new Set(calificacionesGlobales.map(item => item.id_corte))].sort();
+
+    // Reconstruir opciones
+    selectCorte.innerHTML = `<option value="">-- Seleccionar Tabla --</option>`;
+    
+    gruposUnicos.forEach(nombre => {
+        const option = document.createElement('option');
+        option.value = nombre;
+        option.textContent = nombre;
+        selectCorte.appendChild(option);
+    });
+
+    const optionNueva = document.createElement('option');
+    optionNueva.value = 'nuevo';
+    optionNueva.textContent = '➕ Crear nueva tabla...';
+    selectCorte.appendChild(optionNueva);
+
+    // Mantener selección si aún existe
+    if (gruposUnicos.includes(valorActual)) {
+        selectCorte.value = valorActual;
+    }
+}
+
+// 7. DIBUJAR TABLAS Y PROMEDIOS
 function renderizarTablasAgrupadas() {
     tablasContainer.innerHTML = "";
     
     if (calificacionesGlobales.length === 0) {
-        tablasContainer.innerHTML = `<p style="text-align:center; color: var(--text-muted);">No hay calificaciones registradas.</p>`;
+        tablasContainer.innerHTML = `<p style="text-align:center; color: var(--text-muted); padding: 20px;">No hay calificaciones registradas. Selecciona "Crear nueva tabla..." arriba para empezar.</p>`;
         return;
     }
 
-    // Agrupar los datos por "id_corte" (Ej: Tabla_1, Tabla_2)
     const grupos = {};
     calificacionesGlobales.forEach(item => {
         if (!grupos[item.id_corte]) grupos[item.id_corte] = [];
         grupos[item.id_corte].push(item);
     });
 
-    // Ordenar los grupos por nombre
     const nombresGrupos = Object.keys(grupos).sort();
 
     nombresGrupos.forEach(nombreGrupo => {
         const datosGrupo = grupos[nombreGrupo];
-        
-        // Ordenar internamente por número de semana
         datosGrupo.sort((a, b) => a.semana - b.semana);
 
-        // Calcular promedio de "chat_calificacion" ignorando los 0
         let suma = 0;
         let count = 0;
         datosGrupo.forEach(d => {
@@ -84,15 +122,16 @@ function renderizarTablasAgrupadas() {
         });
         const promedio = count > 0 ? (suma / count).toFixed(2) : 0;
 
-        // Crear contenedor de la tabla
         const tablaHTML = document.createElement('div');
         tablaHTML.className = 'table-container';
         tablaHTML.style.marginBottom = '20px';
         
-        // Cabecera con nombre del Corte
         let htmlContent = `
-            <div style="background: var(--input-bg); padding: 12px 20px; font-weight: 800; color: var(--success-color); border-bottom: 2px solid var(--border-color); display: flex; align-items: center; gap: 8px;">
-                <span>🏷️ Corte:</span> <span style="color: var(--primary-color);">${nombreGrupo}</span>
+            <div style="background: var(--input-bg); padding: 12px 20px; font-weight: 800; color: var(--success-color); border-bottom: 2px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <span>🏷️ Tabla:</span> <span style="color: var(--primary-color);">${nombreGrupo}</span>
+                </div>
+                <button class="theme-btn" onclick="agregarATabla('${nombreGrupo}')" style="padding: 4px 10px; margin: 0; font-size: 12px;" title="Seleccionar esta tabla rápidamente">📌 Seleccionar para agregar</button>
             </div>
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
@@ -108,7 +147,6 @@ function renderizarTablasAgrupadas() {
                 <tbody>
         `;
 
-        // Filas de datos
         datosGrupo.forEach(item => {
             htmlContent += `
                 <tr style="border-bottom: 1px solid rgba(68, 71, 90, 0.5); transition: background 0.2s;" onmouseover="this.style.background='var(--surface-hover)'" onmouseout="this.style.background='transparent'">
@@ -124,7 +162,6 @@ function renderizarTablasAgrupadas() {
             `;
         });
 
-        // Fila roja final con el promedio (igual que tu Excel)
         htmlContent += `
                 </tbody>
                 <tfoot>
@@ -142,10 +179,30 @@ function renderizarTablasAgrupadas() {
     });
 }
 
-// 6. AGREGAR NUEVO REGISTRO (CREATE)
+// Función auxiliar para seleccionar la tabla haciendo clic en su botón superior
+window.agregarATabla = function(nombreTabla) {
+    selectCorte.value = nombreTabla;
+    nuevoCorteInput.style.display = 'none';
+    nuevoCorteInput.value = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('nuevaSemana').focus();
+}
+
+// 8. AGREGAR NUEVO REGISTRO (CREATE)
 if (btnAgregarCalificacion) {
     btnAgregarCalificacion.addEventListener('click', async () => {
-        const id_corte = document.getElementById('nuevoCorte').value.trim() || "Tabla_1";
+        let id_corte = selectCorte.value;
+
+        if (id_corte === 'nuevo') {
+            id_corte = nuevoCorteInput.value.trim();
+        }
+
+        if (!id_corte) {
+            alert("Por favor, selecciona una tabla existente o crea una nueva.");
+            selectCorte.focus();
+            return;
+        }
+
         const semana = Number(document.getElementById('nuevaSemana').value) || 0;
         const rango_fecha = document.getElementById('nuevaFecha').value.trim();
         const chat_cal = Number(document.getElementById('nuevoChatCal').value) || 0;
@@ -168,7 +225,7 @@ if (btnAgregarCalificacion) {
                 timestamp: Date.now()
             });
 
-            // Limpiar inputs
+            // Limpiar campos de datos (mantiene la tabla seleccionada para seguir agregando rápido)
             document.getElementById('nuevaSemana').value = "";
             document.getElementById('nuevaFecha').value = "";
             document.getElementById('nuevoChatCal').value = "";
@@ -186,12 +243,12 @@ if (btnAgregarCalificacion) {
     });
 }
 
-// 7. EDITAR REGISTRO (UPDATE - SIN DELETE)
+// 9. EDITAR REGISTRO (UPDATE)
 window.editarCalificacion = async function(id) {
     const item = calificacionesGlobales.find(d => d.id === id);
     if (!item) return;
 
-    const nuevoCorte = prompt("Nombre del Corte/Tabla:", item.id_corte);
+    const nuevoCorte = prompt("Nombre de la Tabla / Corte:", item.id_corte);
     if (nuevoCorte === null) return;
 
     const nuevaSemana = prompt("Semana:", item.semana);
@@ -226,5 +283,5 @@ window.editarCalificacion = async function(id) {
     }
 }
 
-// 8. INICIAR CARGA DE DATOS
+// 10. INICIAR CARGA DE DATOS
 cargarCalificaciones();
