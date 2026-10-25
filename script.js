@@ -97,17 +97,19 @@ async function cargarDatos() {
                 subtema: data.subtema || "",
                 categoria: data.categoria || "",
                 texto: data.texto || "",
-                hashtag: data.hashtag || ""
+                hashtag: data.hashtag || "",
+                timestamp: data.timestamp || 0 // 0 para los registros viejos, así se quedan al inicio
             });
         });
 
+        // Ordenar del más antiguo al más nuevo basado en el timestamp
+        datosGlobales.sort((a, b) => a.timestamp - b.timestamp);
+
         renderizarTabla(datosGlobales);
-        // Desvinculamos los hashtags de la tabla principal. Ahora tienen su propia colección.
-        // cargarHashtagsDesdeFirebase() se llama al abrir el menú lateral.
 
     } catch (error) {
         console.error("Error al cargar Firestore:", error);
-        tableBody.innerHTML = `<tr><td colspan="6" style="color:var(--danger-color); text-align:center;">Error al cargar los datos. Revisa las reglas de seguridad de Firestore.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" style="color:var(--danger-color); text-align:center;">Error al cargar los datos. Revisa las reglas de seguridad.</td></tr>`;
     }
 }
 
