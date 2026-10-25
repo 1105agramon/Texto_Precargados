@@ -35,7 +35,7 @@ const textoActivo = `Por último, nos encantaría conocer su experiencia con nue
 const textoInactivo = `Debido a inactividad, el chat de *0311 LOCATEL finaliza su sesión, le recordamos que también podemos brindarle información a través de redes sociales, en Facebook como Locatel Ciudad de México y en Twitter como @locatel_mx o marcando al *0311 las 24 horas del día los 365 días del año, si desea realizar un reporte sobre servicios en la CDMX puede realizarlo por medio de https://311locatel.cdmx.gob.mx/ Le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
 
 // ==========================================================
-// 3. INTERFAZ (TEMA, SCROLL Y ACORDEÓN)
+// 3. INTERFAZ (TEMA, SCROLL Y VENTANA FLOTANTE MODAL)
 // ==========================================================
 const body = document.body;
 const themeToggle = document.getElementById('themeToggle');
@@ -69,6 +69,29 @@ contenedorTabla.addEventListener('scroll', () => {
 });
 btnInicio.addEventListener('click', () => {
     contenedorTabla.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Lógica de la Ventana Flotante (Modal) para Agregar Plantillas
+const abrirModalBtn = document.getElementById('abrirModalBtn');
+const cerrarModalBtn = document.getElementById('cerrarModalBtn');
+const btnCancelarModal = document.getElementById('btnCancelarModal');
+const modalAgregar = document.getElementById('modalAgregar');
+
+function abrirModal() {
+    if (modalAgregar) modalAgregar.style.display = 'flex';
+}
+
+function cerrarModal() {
+    if (modalAgregar) modalAgregar.style.display = 'none';
+}
+
+if (abrirModalBtn) abrirModalBtn.addEventListener('click', abrirModal);
+if (cerrarModalBtn) cerrarModalBtn.addEventListener('click', cerrarModal);
+if (btnCancelarModal) btnCancelarModal.addEventListener('click', cerrarModal);
+
+// Cerrar modal haciendo clic fuera de la caja
+window.addEventListener('click', (e) => {
+    if (e.target === modalAgregar) cerrarModal();
 });
 
 // Acordeón CRUD Plantillas
