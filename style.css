@@ -526,6 +526,8 @@ button.copy-btn.copied {
 
 .btn-inicio.show { display: flex; }
 
+
+
 /* ==========================================================
    8. LOADER MULTICOLOR Y SCROLLBAR
    ========================================================== */
@@ -834,4 +836,12 @@ body.light-mode .toggle-label:has(input:checked) {
 }
 body.light-mode .hashtag-btn.copied {
     color: #ffffff;
+}
+
+/* ==========================================================
+   SOPORTE PARA SALTOS DE LÍNEA EN TEXTOS DE RESPUESTA
+   ========================================================== */
+.text-col, .editable-cell {
+    white-space: pre-wrap !important;
+    word-break: break-word;
 }
