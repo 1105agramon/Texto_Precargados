@@ -130,11 +130,12 @@ function renderizarTabla(datos) {
             <td>${item.tema}</td>
             <td>${item.subtema}</td>
             <td>${item.categoria}</td>
-            <!-- El evento onblur guarda en Firebase cuando quitas el clic de la celda -->
-            <td class="text-col editable-cell" contenteditable="true" spellcheck="false" title="Haz clic para editar" onblur="guardarEdicionPlantilla('${item.id}', this)">${item.texto}</td>
+            <!-- Haz clic directamente en el texto para editarlo -->
+            <td class="text-col editable-cell" contenteditable="true" spellcheck="false" title="Haz clic sobre el texto para editarlo" onblur="guardarEdicionPlantilla('${item.id}', this)">${item.texto}</td>
             <td>${item.hashtag}</td>
             <td class="center-col" style="display: flex; gap: 5px; justify-content: center;">
                 <button class="copy-btn" onclick="copiarAlPortapapeles(this, event)">Copiar</button>
+                <button class="theme-btn" onclick="editarRegistro('${item.id}', event)" style="padding: 6px 10px; margin: 0;" title="Editar Tema, Subtema, etc.">✏️</button>
                 <button class="theme-btn" onclick="eliminarPlantilla('${item.id}', event)" style="padding: 6px 10px; margin: 0;" title="Eliminar respuesta">🗑️</button>
             </td>
         `;
