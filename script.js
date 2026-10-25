@@ -4,13 +4,13 @@ import { getFirestore, collection, getDocs, doc, setDoc, getDoc, increment, addD
 
 // 2. TU CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = {
-  apiKey: "AIzaSyC29o9h_DSec1S51A82we6e4nLg3f25mw0",
-  authDomain: "gestor-operaciones-chat.firebaseapp.com",
-  projectId: "gestor-operaciones-chat",
-  storageBucket: "gestor-operaciones-chat.firebasestorage.app",
-  messagingSenderId: "822477968222",
-  appId: "1:822477968222:web:3667d900c181d13f7ef5cf",
-  measurementId: "G-TGQYX3ZQ1G"
+    apiKey: "AIzaSyC29o9h_DSec1S51A82we6e4nLg3f25mw0",
+    authDomain: "gestor-operaciones-chat.firebaseapp.com",
+    projectId: "gestor-operaciones-chat",
+    storageBucket: "gestor-operaciones-chat.firebasestorage.app",
+    messagingSenderId: "822477968222",
+    appId: "1:822477968222:web:3667d900c181d13f7ef5cf",
+    measurementId: "G-TGQYX3ZQ1G"
 };
 
 // 3. INICIALIZAR FIREBASE Y FIRESTORE
@@ -21,7 +21,7 @@ const db = getFirestore(app);
 // VARIABLES GLOBALES Y ELEMENTOS DEL DOM
 // ==========================================================
 let datosGlobales = []; 
-let listaHashtags = []; 
+let listaHashtagsFirebase = []; 
 
 const tableBody = document.getElementById('tableBody');
 const searchInput = document.getElementById('searchInput');
@@ -102,7 +102,8 @@ async function cargarDatos() {
         });
 
         renderizarTabla(datosGlobales);
-        cargarHashtagsDesdeFirebase(); 
+        // Desvinculamos los hashtags de la tabla principal. Ahora tienen su propia colección.
+        // cargarHashtagsDesdeFirebase() se llama al abrir el menú lateral.
 
     } catch (error) {
         console.error("Error al cargar Firestore:", error);
@@ -111,7 +112,7 @@ async function cargarDatos() {
 }
 
 // ==========================================================
-// RENDERIZAR LA TABLA Y EDICIÓN
+// RENDERIZAR LA TABLA Y EDICIÓN (ACTUALIZADO CON CRUD)
 // ==========================================================
 function renderizarTabla(datos) {
     tableBody.innerHTML = ''; 
@@ -129,10 +130,12 @@ function renderizarTabla(datos) {
             <td>${item.tema}</td>
             <td>${item.subtema}</td>
             <td>${item.categoria}</td>
-            <td class="text-col editable-cell" contenteditable="true" spellcheck="false" title="Haz clic para editar">${item.texto}</td>
+            <!-- El evento onblur guarda en Firebase cuando quitas el clic de la celda -->
+            <td class="text-col editable-cell" contenteditable="true" spellcheck="false" title="Haz clic para editar" onblur="guardarEdicionPlantilla('${item.id}', this)">${item.texto}</td>
             <td>${item.hashtag}</td>
-            <td class="center-col">
+            <td class="center-col" style="display: flex; gap: 5px; justify-content: center;">
                 <button class="copy-btn" onclick="copiarAlPortapapeles(this, event)">Copiar</button>
+                <button class="theme-btn" onclick="eliminarPlantilla('${item.id}', event)" style="padding: 6px 10px; margin: 0;" title="Eliminar respuesta">🗑️</button>
             </td>
         `;
         tableBody.appendChild(tr);
@@ -392,7 +395,6 @@ if (btnCopiarContacto) {
 const btnGuardarHora = document.getElementById('btnGuardarHora');
 const horaInput = document.getElementById('horaInput');
 
-// Función auxiliar para obtener la fecha en formato YYYY-MM-DD
 const getHoyId = () => {
     const tzOffset = (new Date()).getTimezoneOffset() * 60000; 
     return (new Date(Date.now() - tzOffset)).toISOString().split('T')[0]; 
@@ -447,6 +449,86 @@ if (btnGuardarHora) {
 }
 
 // ==========================================================
+// CRUD PARA LAS PLANTILLAS DE RESPUESTAS (TABLA PRINCIPAL)
+// ==========================================================
+
+// --- CREATE: Agregar nueva plantilla ---
+const btnAgregarPlantilla = document.getElementById('btnAgregarPlantilla');
+if (btnAgregarPlantilla) {
+    btnAgregarPlantilla.addEventListener('click', async () => {
+        const tema = document.getElementById('nuevoTema').value.trim();
+        const subtema = document.getElementById('nuevoSubtema').value.trim();
+        const categoria = document.getElementById('nuevaCategoria').value.trim();
+        const texto = document.getElementById('nuevoTexto').value.trim();
+        let hashtag = document.getElementById('nuevoHashtagPlantilla').value.trim().toUpperCase();
+
+        if (!texto || !tema) {
+            alert("El Tema y el Texto son obligatorios.");
+            return;
+        }
+
+        if (hashtag && !hashtag.startsWith('#') && hashtag !== "NA") hashtag = '#' + hashtag;
+
+        btnAgregarPlantilla.disabled = true;
+        btnAgregarPlantilla.innerText = "⏳";
+
+        try {
+            await addDoc(collection(db, "plantillas_respuestas"), {
+                tema, subtema, categoria, texto, hashtag
+            });
+
+            document.getElementById('nuevoTema').value = "";
+            document.getElementById('nuevoSubtema').value = "";
+            document.getElementById('nuevaCategoria').value = "";
+            document.getElementById('nuevoTexto').value = "";
+            document.getElementById('nuevoHashtagPlantilla').value = "";
+
+            cargarDatos(); 
+        } catch (error) {
+            console.error("Error al agregar plantilla:", error);
+            alert("Hubo un error al guardar la plantilla.");
+        } finally {
+            btnAgregarPlantilla.innerText = "➕ Agregar";
+            btnAgregarPlantilla.disabled = false;
+        }
+    });
+}
+
+// --- UPDATE: Guardar edición al quitar el clic (blur) ---
+window.guardarEdicionPlantilla = async function(id, celda) {
+    const nuevoTexto = celda.innerText.trim();
+    
+    try {
+        await updateDoc(doc(db, "plantillas_respuestas", id), { texto: nuevoTexto });
+        
+        celda.style.backgroundColor = "rgba(80, 250, 123, 0.2)"; 
+        setTimeout(() => celda.style.backgroundColor = "", 1500);
+        
+        const itemIndex = datosGlobales.findIndex(d => d.id === id);
+        if(itemIndex > -1) datosGlobales[itemIndex].texto = nuevoTexto;
+
+    } catch (error) {
+        console.error("Error al actualizar el texto:", error);
+        celda.style.backgroundColor = "rgba(255, 85, 85, 0.2)"; 
+    }
+}
+
+// --- DELETE: Eliminar una plantilla ---
+window.eliminarPlantilla = async function(id, event) {
+    if (event) event.stopPropagation(); 
+    
+    if (confirm("¿Estás seguro de que deseas eliminar esta respuesta del sistema?")) {
+        try {
+            await deleteDoc(doc(db, "plantillas_respuestas", id));
+            cargarDatos(); 
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+            alert("No se pudo eliminar la respuesta.");
+        }
+    }
+}
+
+// ==========================================================
 // 11. LÓGICA DEL MENÚ LATERAL Y CRUD DE HASHTAGS (FIREBASE)
 // ==========================================================
 const btnMenuDespedidas = document.getElementById('btnMenuDespedidas');
@@ -460,10 +542,7 @@ const nuevoHashtagInput = document.getElementById('nuevoHashtagInput');
 const textoActivo = `Por último, nos encantaría conocer su experiencia con nuestro servicio a través de una breve encuesta de satisfacción:  https://forms.gle/iXN2fQZvXikwM6HTA 📊📈\nGracias por utilizar los servicios de *0311Locatel, le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
 const textoInactivo = `Debido a inactividad, el chat de *0311 LOCATEL finaliza su sesión, le recordamos que también podemos brindarle información a través de redes sociales, en Facebook como Locatel Ciudad de México y en Twitter como @locatel_mx o marcando al *0311 las 24 horas del día los 365 días del año, si desea realizar un reporte sobre servicios en la CDMX puede realizarlo por medio de https://311locatel.cdmx.gob.mx/ Le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
 
-// Array para almacenar objetos { id, nombre }
-let listaHashtagsFirebase = []; 
-
-// --- READ: Cargar desde la nueva colección ---
+// --- READ: Cargar desde la colección catalogo_hashtags ---
 async function cargarHashtagsDesdeFirebase() {
     try {
         const querySnapshot = await getDocs(collection(db, "catalogo_hashtags"));
@@ -473,7 +552,6 @@ async function cargarHashtagsDesdeFirebase() {
             listaHashtagsFirebase.push({ id: doc.id, nombre: doc.data().nombre });
         });
         
-        // Aseguramos que #INACTIVIDAD siempre exista en el menú
         if(!listaHashtagsFirebase.some(h => h.nombre === "#INACTIVIDAD")) {
             listaHashtagsFirebase.unshift({ id: "estatico-inactividad", nombre: "#INACTIVIDAD" });
         }
@@ -485,27 +563,29 @@ async function cargarHashtagsDesdeFirebase() {
 }
 
 // --- CREATE: Agregar nuevo hashtag ---
-btnAgregarHashtag.addEventListener('click', async () => {
-    let valor = nuevoHashtagInput.value.trim().toUpperCase();
-    if(!valor) return;
-    
-    if(!valor.startsWith('#')) valor = '#' + valor;
+if (typeof btnAgregarHashtag !== 'undefined' && btnAgregarHashtag) {
+    btnAgregarHashtag.addEventListener('click', async () => {
+        let valor = nuevoHashtagInput.value.trim().toUpperCase();
+        if(!valor) return;
+        
+        if(!valor.startsWith('#')) valor = '#' + valor;
 
-    btnAgregarHashtag.disabled = true;
-    btnAgregarHashtag.innerText = "⏳";
+        btnAgregarHashtag.disabled = true;
+        btnAgregarHashtag.innerText = "⏳";
 
-    try {
-        await addDoc(collection(db, "catalogo_hashtags"), { nombre: valor });
-        nuevoHashtagInput.value = "";
-        await cargarHashtagsDesdeFirebase(); // Recargamos la lista
-    } catch (error) {
-        console.error("Error al crear hashtag:", error);
-        alert("No se pudo agregar el hashtag.");
-    } finally {
-        btnAgregarHashtag.innerText = "➕";
-        btnAgregarHashtag.disabled = false;
-    }
-});
+        try {
+            await addDoc(collection(db, "catalogo_hashtags"), { nombre: valor });
+            nuevoHashtagInput.value = "";
+            await cargarHashtagsDesdeFirebase(); 
+        } catch (error) {
+            console.error("Error al crear hashtag:", error);
+            alert("No se pudo agregar el hashtag.");
+        } finally {
+            btnAgregarHashtag.innerText = "➕";
+            btnAgregarHashtag.disabled = false;
+        }
+    });
+}
 
 // Abrir/Cerrar Menú
 if (btnMenuDespedidas && sideMenuDespedidas) {
@@ -532,17 +612,15 @@ function renderHashtags(filtro = "") {
     }
 
     filtrados.forEach(hashtagObj => {
-        // Contenedor flexible para alinear botones
         const row = document.createElement('div');
         row.style.display = 'flex';
         row.style.gap = '6px';
         row.style.alignItems = 'stretch';
         
-        // Botón principal de copiado
         const btn = document.createElement('button');
         btn.className = 'hashtag-btn';
         btn.style.flex = '1';
-        btn.style.margin = '0'; // Quitar margen por defecto
+        btn.style.margin = '0'; 
         btn.innerHTML = `<span>${hashtagObj.nombre}</span> <span style="font-size: 14px; opacity: 0.7;">📋</span>`;
         
         btn.addEventListener('click', async () => {
@@ -561,7 +639,6 @@ function renderHashtags(filtro = "") {
                     btn.innerHTML = `<span>${hashtagObj.nombre}</span> <span style="font-size: 14px; opacity: 0.7;">📋</span>`;
                 }, 1500);
 
-                // Registrar métrica
                 const diaActual = getHoyId();
                 const hashtagRef = doc(db, "metricas_hashtags", diaActual);
                 const updateData = { fecha: diaActual };
@@ -575,10 +652,8 @@ function renderHashtags(filtro = "") {
         
         row.appendChild(btn);
 
-        // Si no es el de inactividad por defecto, mostramos botones de Editar y Eliminar
         if (hashtagObj.id !== "estatico-inactividad") {
             
-            // Botón UPDATE (Editar)
             const btnEdit = document.createElement('button');
             btnEdit.className = 'theme-btn';
             btnEdit.innerHTML = '✏️';
@@ -601,7 +676,6 @@ function renderHashtags(filtro = "") {
             });
             row.appendChild(btnEdit);
 
-            // Botón DELETE (Eliminar)
             const btnDel = document.createElement('button');
             btnDel.className = 'theme-btn';
             btnDel.innerHTML = '🗑️';
