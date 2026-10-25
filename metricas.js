@@ -38,14 +38,12 @@ async function cargarMetricas() {
     tbodyMetricas.innerHTML = `<tr><td colspan="4" class="loading"><div class="loader"></div>Buscando métricas del ${fecha}...</td></tr>`;
 
     try {
-        // Buscamos el documento en Firebase que tenga como ID la fecha seleccionada
         const docRef = doc(db, "metricas_hashtags", fecha);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
             renderMetricas(docSnap.data());
         } else {
-            // Si no hay datos ese día
             tbodyMetricas.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted); font-size: 15px;">No se registraron hashtags en la fecha: <strong>${fecha}</strong></td></tr>`;
         }
     } catch (error) {
@@ -54,21 +52,46 @@ async function cargarMetricas() {
     }
 }
 
-// 7. RENDERIZAR LOS DATOS EN LA TABLA
+// 7. RENDERIZAR LOS DATOS EN LA TABLA (AHORA LEE AMBOS FORMATOS)
 function renderMetricas(data) {
     tbodyMetricas.innerHTML = "";
     let hayDatos = false;
+    
+    // Objeto para unificar todos los conteos limpios
+    const hashtagMap = {};
 
-    // Convertimos el objeto de Firebase en un Array para poder ordenarlo alfabéticamente
-    const etiquetas = Object.entries(data)
-        // 🔥 ESTE ES EL FILTRO CORREGIDO: Evitamos los que se guardaron mal con el punto (.)
-        .filter(([key]) => key.startsWith('#') && !key.includes('.')) 
-        .sort((a, b) => a[0].localeCompare(b[0])); // Orden alfabético
+    Object.entries(data).forEach(([key, value]) => {
+        if (key === 'fecha') return;
 
+        // Si Firebase lo guardó con el formato antiguo (ej: "#079.activo")
+        if (key.includes('.')) {
+            const partes = key.split('.');
+            const nombre = partes[0]; // Extrae el "#079"
+            const estado = partes[1]; // Extrae el "activo"
+            
+            if (!hashtagMap[nombre]) hashtagMap[nombre] = { activo: 0, inactivo: 0 };
+            
+            if (estado === 'activo' || estado === 'inactivo') {
+                // Recupera el número exacto de clics que tenías guardados
+                hashtagMap[nombre][estado] += (typeof value === 'number' ? value : 0);
+            }
+        } 
+        // Si Firebase lo guardó con el formato nuevo correcto
+        else if (key.startsWith('#') && typeof value === 'object') {
+            if (!hashtagMap[key]) hashtagMap[key] = { activo: 0, inactivo: 0 };
+            hashtagMap[key].activo += (value.activo || 0);
+            hashtagMap[key].inactivo += (value.inactivo || 0);
+        }
+    });
+
+    // Convertir el mapa unificado a un arreglo y ordenarlo alfabéticamente
+    const etiquetas = Object.entries(hashtagMap)
+        .sort((a, b) => a[0].localeCompare(b[0]));
+
+    // Dibujar las filas en la tabla
     etiquetas.forEach(([hashtag, valores]) => {
         hayDatos = true;
         
-        // Obtenemos los valores; si no existe, es 0
         const activos = valores.activo || 0;
         const inactivos = valores.inactivo || 0;
         const total = activos + inactivos;
