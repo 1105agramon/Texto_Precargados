@@ -37,7 +37,7 @@
                 <input type="text" id="searchHashtag" placeholder="🔍 Buscar etiqueta...">
             </div>
 
-            <!-- Controles CRUD Hashtags (NUEVO) -->
+            <!-- Controles CRUD Hashtags -->
             <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                 <input type="text" id="nuevoHashtagInput" placeholder="Nuevo #HASHTAG..." style="flex:1; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 14px; outline: none; text-transform: uppercase;">
                 <button id="btnAgregarHashtag" class="theme-btn" style="padding: 0 15px; margin: 0; display: flex; align-items: center; justify-content: center; font-size: 16px;" title="Agregar Hashtag">➕</button>
@@ -66,11 +66,10 @@
                         📞 Llamadas
                     </a>
                     
-                    <!-- NUEVO BOTÓN: Módulo de Métricas -->
                     <a href="metricas.html" target="_blank" class="theme-btn" style="text-decoration: none; padding: 6px 15px; border-radius: 8px; border: 1px solid rgba(150, 150, 150, 0.4); background: transparent; color: inherit; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" title="Ver métricas de Hashtags">
                         📊 Métricas
                     </a>
-                    <!-- NUEVO BOTÓN: Calificaciones -->
+
                     <a href="calificaciones.html" target="_blank" class="theme-btn" style="text-decoration: none; padding: 6px 15px; border-radius: 8px; border: 1px solid rgba(150, 150, 150, 0.4); background: transparent; color: inherit; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" title="Gestionar Calificaciones">
                         ⭐ Calificaciones
                     </a>
@@ -80,7 +79,6 @@
             </div>
             
             <div class="controls-container">
-                
                 <div class="search-box">
                     <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     <input type="text" id="searchInput" placeholder="Buscar por tema, subtema o categoría">
@@ -104,25 +102,42 @@
             </button>
         </header>
 
-        <!-- Contenedor del Formulario CRUD Plegable (ACORDEÓN) -->
-        <div style="margin-bottom: 15px; background: var(--surface-color); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden;">
-            
-            <!-- Botón para Minimizar/Maximizar -->
-            <div id="toggleCrudBtn" style="padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15); font-weight: 600; color: var(--primary-color); transition: background 0.2s;">
-                <span>📝 Agregar Nueva Respuesta</span>
-                <span id="crudToggleIcon">▼</span>
-            </div>
-            
-            <!-- Cuerpo del formulario (Oculto por defecto) -->
-            <div id="crudFormBody" style="display: none; padding: 15px; border-top: 1px solid var(--border-color);">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="text" id="nuevoTema" placeholder="Tema" class="contact-field" style="width: 120px;">
-                    <input type="text" id="nuevoSubtema" placeholder="Subtema" class="contact-field" style="width: 120px;">
-                    <input type="text" id="nuevaCategoria" placeholder="Categoría" class="contact-field" style="width: 120px;">
-                    <input type="text" id="nuevoTexto" placeholder="Texto de la respuesta..." class="contact-field" style="flex: 1; min-width: 200px;">
-                    <input type="text" id="nuevoHashtagPlantilla" placeholder="#HASHTAG" class="contact-field" style="width: 100px;">
-                    <button id="btnAgregarPlantilla" class="copy-btn" style="background-color: var(--primary-color); color: var(--bg-color);">➕ Agregar</button>
+        <!-- Botón para abrir la Ventana Flotante (Modal) -->
+        <div style="margin-bottom: 15px; display: flex; justify-content: flex-end;">
+            <button id="abrirModalBtn" class="copy-btn" style="background-color: var(--primary-color); color: var(--bg-color); padding: 10px 20px; font-weight: 700;">
+                ➕ Agregar Nueva Respuesta
+            </button>
+        </div>
+
+        <!-- Ventana Flotante (Modal) Oculta por defecto -->
+        <div id="modalAgregar" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+            <div style="background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; width: 100%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                    <h3 style="margin: 0; color: var(--primary-hover); font-size: 18px;">📝 Nueva Plantilla de Respuesta</h3>
+                    <button id="cerrarModalBtn" style="background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; padding: 0;">&times;</button>
                 </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="nuevoTema" placeholder="Tema" class="contact-field" style="flex: 1;">
+                        <input type="text" id="nuevoSubtema" placeholder="Subtema" class="contact-field" style="flex: 1;">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="nuevaCategoria" placeholder="Categoría" class="contact-field" style="flex: 1;">
+                        <input type="text" id="nuevoHashtagPlantilla" placeholder="#HASHTAG" class="contact-field" style="flex: 1;">
+                    </div>
+
+                    <!-- Textarea adaptado para admitir saltos de línea -->
+                    <textarea id="nuevoTexto" placeholder="Texto de la respuesta (admite saltos de línea con Enter)..." class="contact-field" style="width: 100%; height: 120px; resize: vertical; font-family: inherit; box-sizing: border-box;"></textarea>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                        <button id="btnCancelarModal" class="theme-btn" style="padding: 10px 20px; margin: 0;">Cancelar</button>
+                        <button id="btnAgregarPlantilla" class="copy-btn" style="background-color: var(--primary-color); color: var(--bg-color); padding: 10px 20px;">💾 Guardar Respuesta</button>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -150,7 +165,6 @@
         </div>
     </div>
 
-    <!-- Recuerda que este type="module" es clave para Firebase v9+ -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
