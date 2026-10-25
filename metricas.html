@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métricas de Hashtags</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<!-- Reutilizamos las clases del light mode si está guardado en localStorage -->
+<script>
+    if (localStorage.getItem('theme') === 'light') document.documentElement.classList.add('light-mode');
+</script>
+<body class="">
+    <div class="container" style="max-width: 900px;">
+        <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px;">
+            <div class="header-titles">
+                <h1>📊 Métricas de Hashtags</h1>
+                <p class="subtitle">Consulta el conteo de etiquetas usadas por fecha</p>
+            </div>
+            
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="folio-box">
+                    <input type="date" id="fechaFiltro" class="folio-field" style="width: auto; cursor: pointer;">
+                </div>
+                <a href="index.html" class="theme-btn" style="text-decoration: none; padding: 10px 20px; font-weight: 600;">
+                    🏠 Volver al Inicio
+                </a>
+            </div>
+        </header>
+
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Hashtag</th>
+                        <th class="center-col">🟢 Activo</th>
+                        <th class="center-col">🔴 Inactivo</th>
+                        <th class="center-col">Total General</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyMetricas">
+                    <tr>
+                        <td colspan="4" class="loading">
+                            <div class="loader"></div>
+                            Cargando métricas...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Script modular para leer desde Firebase -->
+    <script type="module" src="metricas.js"></script>
+</body>
+</html>
