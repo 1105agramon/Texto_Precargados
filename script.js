@@ -1,8 +1,9 @@
-// 1. IMPORTACIONES DE FIREBASE (Versión CDN para navegadores)
+// ==========================================================
+// 1. IMPORTACIONES Y CONFIGURACIÓN DE FIREBASE
+// ==========================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, setDoc, getDoc, increment, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 2. TU CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyC29o9h_DSec1S51A82we6e4nLg3f25mw0",
     authDomain: "gestor-operaciones-chat.firebaseapp.com",
@@ -13,48 +14,40 @@ const firebaseConfig = {
     measurementId: "G-TGQYX3ZQ1G"
 };
 
-// 3. INICIALIZAR FIREBASE Y FIRESTORE
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ==========================================================
-// VARIABLES GLOBALES Y ELEMENTOS DEL DOM
+// 2. VARIABLES GLOBALES Y UTILIDADES
 // ==========================================================
 let datosGlobales = []; 
 let listaHashtagsFirebase = []; 
 
-const tableBody = document.getElementById('tableBody');
-const searchInput = document.getElementById('searchInput');
-const clearBtn = document.getElementById('clearSearch');
+// Función global para obtener la fecha de hoy ajustada a la zona horaria local
+const getHoyId = () => {
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000; 
+    return (new Date(Date.now() - tzOffset)).toISOString().split('T')[0]; 
+};
 
-const btnCopiarFolio = document.getElementById('btnCopiarFolio');
-const campoFolioHeader = document.getElementById('folioInput');
+// Mensajes fijos
+const MENSAJE_LLAVE = `Es necesario que nos envíe un correo a chat.locatel@cdmx.gob.mx con la siguiente documentación en formato PDF: 📧📁\n\n1.- Identificación oficial vigente (INE, pasaporte, cédula profesional, cartilla del servicio militar, en caso de extranjeros FM2 o FM3). Preferentemente INE por ambos lados. 🪪\n\n2.- Una fotografía del titular de la cuenta Llave CDMX donde sostenga la identificación oficial. (Selfie) 🤳📸\n\n⚠️ IMPORTANTE: En el ASUNTO del correo deberá colocar el siguiente folio: CHAT-0000-000, mismo que tiene una vigencia de 72 horas. ⏳ En el CUERPO del correo deberá describir brevemente la complicación que está presentando agregando número telefónico de contacto. 📞 La información deberá ser enviada desde una cuenta de correo electrónico a la que tenga acceso en todo momento. 📑\n\nNOTA: Procure que las imágenes sean legibles para evitar contratiempos en su trámite. ✅`;
+const textoActivo = `Por último, nos encantaría conocer su experiencia con nuestro servicio a través de una breve encuesta de satisfacción:  https://forms.gle/iXN2fQZvXikwM6HTA 📊📈\nGracias por utilizar los servicios de *0311Locatel, le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
+const textoInactivo = `Debido a inactividad, el chat de *0311 LOCATEL finaliza su sesión, le recordamos que también podemos brindarle información a través de redes sociales, en Facebook como Locatel Ciudad de México y en Twitter como @locatel_mx o marcando al *0311 las 24 horas del día los 365 días del año, si desea realizar un reporte sobre servicios en la CDMX puede realizarlo por medio de https://311locatel.cdmx.gob.mx/ Le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
+
+// ==========================================================
+// 3. INTERFAZ (TEMA, SCROLL Y ACORDEÓN)
+// ==========================================================
+const body = document.body;
+const themeToggle = document.getElementById('themeToggle');
+const icon = themeToggle.querySelector('.icon');
 const btnInicio = document.getElementById('btnInicio');
 const contenedorTabla = document.querySelector('.table-container');
 
-// Mensaje Fijo Llave CDMX
-const MENSAJE_LLAVE = `Es necesario que nos envíe un correo a chat.locatel@cdmx.gob.mx con la siguiente documentación en formato PDF: 📧📁
-
-1.- Identificación oficial vigente (INE, pasaporte, cédula profesional, cartilla del servicio militar, en caso de extranjeros FM2 o FM3). Preferentemente INE por ambos lados. 🪪
-
-2.- Una fotografía del titular de la cuenta Llave CDMX donde sostenga la identificación oficial. (Selfie) 🤳📸
-
-⚠️ IMPORTANTE: En el ASUNTO del correo deberá colocar el siguiente folio: CHAT-0000-000, mismo que tiene una vigencia de 72 horas. ⏳ En el CUERPO del correo deberá describir brevemente la complicación que está presentando agregando número telefónico de contacto. 📞 La información deberá ser enviada desde una cuenta de correo electrónico a la que tenga acceso en todo momento. 📑
-
-NOTA: Procure que las imágenes sean legibles para evitar contratiempos en su trámite. ✅`;
-
-// ==========================================================
-// MODO CLARO / OSCURO
-// ==========================================================
-const themeToggle = document.getElementById('themeToggle');
-const body = document.body;
-const icon = themeToggle.querySelector('.icon');
-
+// Tema Oscuro / Claro
 if (localStorage.getItem('theme') === 'light') {
     body.classList.add('light-mode');
     icon.innerText = '☀️';
 }
-
 themeToggle.addEventListener('click', () => {
     body.classList.toggle('light-mode');
     if (body.classList.contains('light-mode')) {
@@ -66,9 +59,7 @@ themeToggle.addEventListener('click', () => {
     }
 });
 
-// ==========================================================
-// SCROLL AL INICIO
-// ==========================================================
+// Scroll al inicio
 contenedorTabla.addEventListener('scroll', () => {
     if (contenedorTabla.scrollTop > 100) {
         btnInicio.classList.add('show');
@@ -76,14 +67,83 @@ contenedorTabla.addEventListener('scroll', () => {
         btnInicio.classList.remove('show');
     }
 });
-
 btnInicio.addEventListener('click', () => {
     contenedorTabla.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
+// Acordeón CRUD Plantillas
+const toggleCrudBtn = document.getElementById('toggleCrudBtn');
+const crudFormBody = document.getElementById('crudFormBody');
+const crudToggleIcon = document.getElementById('crudToggleIcon');
+
+if (toggleCrudBtn && crudFormBody) {
+    toggleCrudBtn.addEventListener('click', () => {
+        if (crudFormBody.style.display === 'none') {
+            crudFormBody.style.display = 'block';
+            crudToggleIcon.innerText = '▲';
+            toggleCrudBtn.style.background = 'rgba(0,0,0,0.3)';
+        } else {
+            crudFormBody.style.display = 'none';
+            crudToggleIcon.innerText = '▼';
+            toggleCrudBtn.style.background = 'rgba(0,0,0,0.15)';
+        }
+    });
+}
+
 // ==========================================================
-// CARGA DE DATOS DESDE FIREBASE FIRESTORE
+// 4. MÓDULO: HORA DE COMIDA
 // ==========================================================
+const btnGuardarHora = document.getElementById('btnGuardarHora');
+const horaInput = document.getElementById('horaInput');
+
+async function obtenerHoraGuardada() {
+    if (!horaInput) return;
+    try {
+        const docRef = doc(db, "registro_comidas", getHoyId());
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().hora_comida) {
+            horaInput.value = docSnap.data().hora_comida;
+        }
+    } catch (error) {
+        console.error("Error al leer la hora:", error);
+    }
+}
+
+if (btnGuardarHora) {
+    btnGuardarHora.addEventListener('click', async () => {
+        const horaValor = horaInput.value;
+        if (!horaValor) return alert("Por favor, selecciona una hora primero.");
+
+        btnGuardarHora.disabled = true;
+        btnGuardarHora.innerText = "⏳";
+
+        try {
+            await setDoc(doc(db, "registro_comidas", getHoyId()), {
+                fecha: getHoyId(),
+                hora_comida: horaValor
+            }, { merge: true });
+            
+            btnGuardarHora.innerText = "✅";
+            setTimeout(() => {
+                btnGuardarHora.innerText = "💾";
+                btnGuardarHora.disabled = false;
+            }, 2000);
+        } catch (error) {
+            console.error("Error al guardar la hora:", error);
+            alert("Hubo un error al guardar la hora.");
+            btnGuardarHora.innerText = "💾";
+            btnGuardarHora.disabled = false;
+        }
+    });
+}
+
+// ==========================================================
+// 5. MÓDULO: TABLA PRINCIPAL (PLANTILLAS DE RESPUESTA)
+// ==========================================================
+const tableBody = document.getElementById('tableBody');
+const searchInput = document.getElementById('searchInput');
+const clearBtn = document.getElementById('clearSearch');
+
 async function cargarDatos() {
     try {
         const querySnapshot = await getDocs(collection(db, "plantillas_respuestas"));
@@ -98,13 +158,12 @@ async function cargarDatos() {
                 categoria: data.categoria || "",
                 texto: data.texto || "",
                 hashtag: data.hashtag || "",
-                timestamp: data.timestamp || 0 // 0 para los registros viejos, así se quedan al inicio
+                timestamp: data.timestamp || 0 
             });
         });
 
-        // Ordenar del más antiguo al más nuevo basado en el timestamp
+        // Ordenar del más antiguo al más nuevo para no mover el orden original
         datosGlobales.sort((a, b) => a.timestamp - b.timestamp);
-
         renderizarTabla(datosGlobales);
 
     } catch (error) {
@@ -113,12 +172,8 @@ async function cargarDatos() {
     }
 }
 
-// ==========================================================
-// RENDERIZAR LA TABLA Y EDICIÓN (ACTUALIZADO CON CRUD)
-// ==========================================================
 function renderizarTabla(datos) {
     tableBody.innerHTML = ''; 
-
     if (datos.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No se encontraron resultados.</td></tr>`;
         return;
@@ -132,7 +187,6 @@ function renderizarTabla(datos) {
             <td>${item.tema}</td>
             <td>${item.subtema}</td>
             <td>${item.categoria}</td>
-            <!-- Haz clic directamente en el texto para editarlo -->
             <td class="text-col editable-cell" contenteditable="true" spellcheck="false" title="Haz clic sobre el texto para editarlo" onblur="guardarEdicionPlantilla('${item.id}', this)">${item.texto}</td>
             <td>${item.hashtag}</td>
             <td class="center-col" style="display: flex; gap: 5px; justify-content: center;">
@@ -145,33 +199,18 @@ function renderizarTabla(datos) {
     });
 }
 
-// ==========================================================
-// FILTRO INTELIGENTE
-// ==========================================================
+// Búsqueda inteligente
 searchInput.addEventListener('input', function(e) {
     const terminoBusqueda = e.target.value.toLowerCase().trim();
-    
     clearBtn.style.display = terminoBusqueda.length > 0 ? 'block' : 'none';
 
-    if (terminoBusqueda === "") {
-        renderizarTabla(datosGlobales);
-        return;
-    }
+    if (terminoBusqueda === "") return renderizarTabla(datosGlobales);
 
     const palabras = terminoBusqueda.split(/\s+/);
-
     const datosFiltrados = datosGlobales.filter(item => {
-        const contenidoFila = `
-            ${item.tema} 
-            ${item.subtema} 
-            ${item.categoria} 
-            ${item.texto} 
-            ${item.hashtag}
-        `.toLowerCase();
-
+        const contenidoFila = `${item.tema} ${item.subtema} ${item.categoria} ${item.texto} ${item.hashtag}`.toLowerCase();
         return palabras.every(palabra => contenidoFila.includes(palabra));
     });
-
     renderizarTabla(datosFiltrados);
 });
 
@@ -183,279 +222,8 @@ clearBtn.addEventListener('click', () => {
 });
 
 // ==========================================================
-// FUNCIONES DE COPIADO ACTUALIZADAS PARA MÓDULOS (window.)
+// 6. CRUD: PLANTILLAS DE RESPUESTA
 // ==========================================================
-window.copiarDesdeFila = async function(fila, event) {
-    if (event && event.target.classList.contains('text-col')) {
-        return; 
-    }
-
-    const boton = fila.querySelector('.copy-btn');
-    const celdaTexto = fila.querySelector('.text-col');
-    
-    let textoHTML = celdaTexto.innerHTML;
-    let textoPlano = celdaTexto.innerText; 
-    const valorFolio = campoFolioHeader.value.trim();
-
-    if (textoHTML.includes("0000-000") && valorFolio !== "") {
-        textoHTML = textoHTML.replace(/0000-000/g, valorFolio);
-        textoPlano = textoPlano.replace(/0000-000/g, valorFolio);
-    }
-
-    try {
-        const contieneImagen = textoHTML.includes('<img');
-
-        if (contieneImagen) {
-            const type = "text/html";
-            const blobHTML = new Blob([textoHTML], { type });
-            const blobText = new Blob([textoPlano], { type: "text/plain" });
-            const data = [new ClipboardItem({ 
-                [type]: blobHTML, 
-                "text/plain": blobText 
-            })];
-            await navigator.clipboard.write(data);
-        } else {
-            await navigator.clipboard.writeText(textoPlano);
-        }
-        
-        const textoOriginal = boton.innerText;
-        boton.innerText = "¡Copiado!";
-        boton.classList.add('copied');
-
-        if (document.body.classList.contains('light-mode')) {
-            fila.style.backgroundColor = "rgba(4, 255, 109, 0.4)"; 
-        } else {
-            fila.style.backgroundColor = "rgba(62, 228, 112, 0.44)"; 
-        }
-
-        setTimeout(() => {
-            boton.innerText = textoOriginal;
-            boton.classList.remove('copied');
-            fila.style.backgroundColor = ""; 
-        }, 1500);
-        
-    } catch (err) {
-        console.error('Error al copiar desde fila: ', err);
-        await navigator.clipboard.writeText(textoPlano).catch(e => console.error("Fallo definitivo: ", e));
-    }
-}
-
-window.copiarAlPortapapeles = async function(boton, event) {
-    if(event) event.stopPropagation();
-
-    const fila = boton.closest('tr');
-    const celdaTexto = fila.querySelector('.text-col');
-    
-    let textoHTML = celdaTexto.innerHTML;
-    let textoPlano = celdaTexto.innerText;
-    const valorFolio = campoFolioHeader.value.trim();
-
-    if (textoHTML.includes("0000-000") && valorFolio !== "") {
-        textoHTML = textoHTML.replace(/0000-000/g, valorFolio);
-        textoPlano = textoPlano.replace(/0000-000/g, valorFolio);
-    }
-
-    try {
-        const contieneImagen = textoHTML.includes('<img');
-
-        if (contieneImagen) {
-            const type = "text/html";
-            const blobHTML = new Blob([textoHTML], { type });
-            const blobText = new Blob([textoPlano], { type: "text/plain" });
-            const data = [new ClipboardItem({ 
-                [type]: blobHTML, 
-                "text/plain": blobText 
-            })];
-            await navigator.clipboard.write(data);
-        } else {
-            await navigator.clipboard.writeText(textoPlano);
-        }
-        
-        const textoOriginal = boton.innerText;
-        boton.innerText = "¡Copiado!";
-        boton.classList.add('copied');
-        
-        setTimeout(() => {
-            boton.innerText = textoOriginal;
-            boton.classList.remove('copied');
-        }, 1500);
-
-    } catch (err) {
-        console.error('Error al copiar: ', err);
-        await navigator.clipboard.writeText(textoPlano).catch(e => console.error("Fallo definitivo: ", e));
-    }
-}
-
-// ==========================================================
-// BOTÓN HEADER "COPIAR LLAVE"
-// ==========================================================
-btnCopiarFolio.addEventListener('click', async () => {
-    try {
-        let textoFinal = MENSAJE_LLAVE;
-        const valorFolio = campoFolioHeader.value.trim();
-
-        if (valorFolio !== "") {
-            textoFinal = textoFinal.replace(/0000-000/g, valorFolio);
-        }
-
-        await navigator.clipboard.writeText(textoFinal);
-
-        const textoOriginal = btnCopiarFolio.innerText;
-        btnCopiarFolio.innerText = "¡Copiado!";
-        btnCopiarFolio.classList.add('copied');
-
-        setTimeout(() => {
-            btnCopiarFolio.innerText = textoOriginal;
-            btnCopiarFolio.classList.remove('copied');
-        }, 1500);
-
-    } catch (err) {
-        console.error('Error al copiar el mensaje Llave desde el header: ', err);
-    }
-});
-
-// ==========================================================
-// VALIDACIÓN DE MEDIOS DE CONTACTO
-// ==========================================================
-function enmascararTelefono(tel) {
-    if (tel.length === 10) {
-        return tel.substring(0, 3) + "****" + tel.substring(7);
-    }
-    return tel; 
-}
-
-function enmascararCorreo(correo) {
-    const partes = correo.split('@');
-    if (partes.length !== 2) return correo; 
-
-    const usuario = partes[0];
-    const dominio = partes[1];
-    let usuarioOculto = usuario;
-
-    if (usuario.length >= 6) {
-        usuarioOculto = usuario.substring(0, 3) + "****" + usuario.substring(usuario.length - 3);
-    } else if (usuario.length >= 3) {
-        usuarioOculto = usuario.substring(0, 1) + "****" + usuario.substring(usuario.length - 1);
-    } else {
-        usuarioOculto = "****";
-    }
-
-    return usuarioOculto + "@" + dominio;
-}
-
-const btnCopiarContacto = document.getElementById('btnCopiarContacto');
-const telefonoInput = document.getElementById('telefonoInput');
-const correoInput = document.getElementById('correoInput');
-
-if (btnCopiarContacto) {
-    btnCopiarContacto.addEventListener('click', async () => {
-        const telInput = telefonoInput.value.trim();
-        const emailInput = correoInput.value.trim();
-        let textoFinal = "";
-
-        const telOculto = telInput !== "" ? enmascararTelefono(telInput) : "";
-        const emailOculto = emailInput !== "" ? enmascararCorreo(emailInput) : "";
-
-        if (telInput !== "" && emailInput !== "") {
-            textoFinal = `En su Cuenta Llave se encuentran registrados los siguientes medios de contacto 😊, ¿Podría confirmarme si actualmente tiene acceso a ellos? 📩📱\nTeléfono: ${telOculto}\nCorreo: ${emailOculto}`;
-        } 
-        else if (telInput !== "" && emailInput === "") {
-            textoFinal = `En su Cuenta Llave, su correo electrónico se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al número celular que se encuentra registrado? 📱\nNúmero de celular: ${telOculto}`;
-        } 
-        else if (emailInput !== "" && telInput === "") {
-            textoFinal = `En su Cuenta Llave, su número celular se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al correo electrónico que se encuentra registrado? 📩\nCorreo: ${emailOculto}`;
-        } 
-        else {
-            alert("Por favor, ingresa al menos el teléfono o el correo.");
-            return; 
-        }
-
-        try {
-            await navigator.clipboard.writeText(textoFinal);
-            
-            const textoOriginal = btnCopiarContacto.innerText;
-            btnCopiarContacto.innerText = "¡Copiado!";
-            btnCopiarContacto.classList.add('copied');
-
-            telefonoInput.value = "";
-            correoInput.value = "";
-
-            setTimeout(() => {
-                btnCopiarContacto.innerText = textoOriginal;
-                btnCopiarContacto.classList.remove('copied');
-            }, 1500);
-
-        } catch (err) {
-            console.error('Error al copiar el mensaje de contacto: ', err);
-            alert("No se pudo copiar el texto. Verifica los permisos de tu navegador.");
-        }
-    });
-}
-
-// ==========================================================
-// REGISTRO DE HORA DE COMIDA EN FIREBASE
-// ==========================================================
-const btnGuardarHora = document.getElementById('btnGuardarHora');
-const horaInput = document.getElementById('horaInput');
-
-const getHoyId = () => {
-    const tzOffset = (new Date()).getTimezoneOffset() * 60000; 
-    return (new Date(Date.now() - tzOffset)).toISOString().split('T')[0]; 
-};
-
-async function obtenerHoraGuardada() {
-    if (!horaInput) return;
-    try {
-        const docRef = doc(db, "registro_comidas", getHoyId());
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists() && docSnap.data().hora_comida) {
-            horaInput.value = docSnap.data().hora_comida;
-        }
-    } catch (error) {
-        console.error("Error al leer la hora:", error);
-    }
-}
-
-if (btnGuardarHora) {
-    btnGuardarHora.addEventListener('click', async () => {
-        const horaValor = horaInput.value;
-
-        if (!horaValor) {
-            alert("Por favor, selecciona una hora primero.");
-            return;
-        }
-
-        btnGuardarHora.disabled = true;
-        btnGuardarHora.innerText = "⏳";
-
-        try {
-            await setDoc(doc(db, "registro_comidas", getHoyId()), {
-                fecha: getHoyId(),
-                hora_comida: horaValor
-            }, { merge: true });
-
-            btnGuardarHora.innerText = "✅";
-            
-            setTimeout(() => {
-                btnGuardarHora.innerText = "💾";
-                btnGuardarHora.disabled = false;
-            }, 2000);
-
-        } catch (error) {
-            console.error("Error al guardar la hora:", error);
-            alert("Hubo un error al guardar la hora.");
-            btnGuardarHora.innerText = "💾";
-            btnGuardarHora.disabled = false;
-        }
-    });
-}
-
-// ==========================================================
-// CRUD PARA LAS PLANTILLAS DE RESPUESTAS (TABLA PRINCIPAL)
-// ==========================================================
-
-// --- CREATE: Agregar nueva plantilla ---
 const btnAgregarPlantilla = document.getElementById('btnAgregarPlantilla');
 if (btnAgregarPlantilla) {
     btnAgregarPlantilla.addEventListener('click', async () => {
@@ -465,11 +233,7 @@ if (btnAgregarPlantilla) {
         const texto = document.getElementById('nuevoTexto').value.trim();
         let hashtag = document.getElementById('nuevoHashtagPlantilla').value.trim().toUpperCase();
 
-        if (!texto || !tema) {
-            alert("El Tema y el Texto son obligatorios.");
-            return;
-        }
-
+        if (!texto || !tema) return alert("El Tema y el Texto son obligatorios.");
         if (hashtag && !hashtag.startsWith('#') && hashtag !== "NA") hashtag = '#' + hashtag;
 
         btnAgregarPlantilla.disabled = true;
@@ -477,7 +241,8 @@ if (btnAgregarPlantilla) {
 
         try {
             await addDoc(collection(db, "plantillas_respuestas"), {
-                tema, subtema, categoria, texto, hashtag
+                tema, subtema, categoria, texto, hashtag,
+                timestamp: Date.now() // Timestamp exacto para ordenar
             });
 
             document.getElementById('nuevoTema').value = "";
@@ -497,48 +262,27 @@ if (btnAgregarPlantilla) {
     });
 }
 
-// --- UPDATE: Guardar edición al quitar el clic (blur) ---
 window.guardarEdicionPlantilla = async function(id, celda) {
     const nuevoTexto = celda.innerText.trim();
-    
     try {
         await updateDoc(doc(db, "plantillas_respuestas", id), { texto: nuevoTexto });
-        
         celda.style.backgroundColor = "rgba(80, 250, 123, 0.2)"; 
         setTimeout(() => celda.style.backgroundColor = "", 1500);
         
         const itemIndex = datosGlobales.findIndex(d => d.id === id);
         if(itemIndex > -1) datosGlobales[itemIndex].texto = nuevoTexto;
-
     } catch (error) {
         console.error("Error al actualizar el texto:", error);
         celda.style.backgroundColor = "rgba(255, 85, 85, 0.2)"; 
     }
 }
 
-// --- DELETE: Eliminar una plantilla ---
-window.eliminarPlantilla = async function(id, event) {
-    if (event) event.stopPropagation(); 
-    
-    if (confirm("¿Estás seguro de que deseas eliminar esta respuesta del sistema?")) {
-        try {
-            await deleteDoc(doc(db, "plantillas_respuestas", id));
-            cargarDatos(); 
-        } catch (error) {
-            console.error("Error al eliminar:", error);
-            alert("No se pudo eliminar la respuesta.");
-        }
-    }
-}
-
-// --- UPDATE: Editar los metadatos de la fila ---
 window.editarRegistro = async function(id, event) {
-    if (event) event.stopPropagation(); // Evita que se copie el texto al hacer clic en el lápiz
+    if (event) event.stopPropagation(); 
     
     const item = datosGlobales.find(d => d.id === id);
     if (!item) return;
 
-    // Pedimos los nuevos valores mostrando los actuales por defecto
     const nuevoTema = prompt("Edita el Tema:", item.tema);
     if (nuevoTema === null) return; 
 
@@ -551,7 +295,6 @@ window.editarRegistro = async function(id, event) {
     let nuevoHashtag = prompt("Edita el Hashtag:", item.hashtag);
     if (nuevoHashtag === null) return;
 
-    // Formatear hashtag automáticamente
     nuevoHashtag = nuevoHashtag.trim().toUpperCase();
     if (nuevoHashtag && !nuevoHashtag.startsWith('#') && nuevoHashtag !== "NA") {
         nuevoHashtag = '#' + nuevoHashtag;
@@ -564,16 +307,169 @@ window.editarRegistro = async function(id, event) {
             categoria: nuevaCategoria.trim(),
             hashtag: nuevoHashtag
         });
-        
-        cargarDatos(); // Recargar la tabla para mostrar los cambios
+        cargarDatos(); 
     } catch (error) {
         console.error("Error al actualizar el registro:", error);
         alert("No se pudo actualizar la información.");
     }
 }
 
+window.eliminarPlantilla = async function(id, event) {
+    if (event) event.stopPropagation(); 
+    if (confirm("¿Estás seguro de que deseas eliminar esta respuesta del sistema?")) {
+        try {
+            await deleteDoc(doc(db, "plantillas_respuestas", id));
+            cargarDatos(); 
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+            alert("No se pudo eliminar la respuesta.");
+        }
+    }
+}
+
 // ==========================================================
-// 11. LÓGICA DEL MENÚ LATERAL Y CRUD DE HASHTAGS (FIREBASE)
+// 7. FUNCIONES DE COPIADO GENERAL
+// ==========================================================
+const campoFolioHeader = document.getElementById('folioInput');
+
+window.copiarDesdeFila = async function(fila, event) {
+    if (event && event.target.classList.contains('text-col')) return; 
+
+    const boton = fila.querySelector('.copy-btn');
+    const celdaTexto = fila.querySelector('.text-col');
+    
+    let textoHTML = celdaTexto.innerHTML;
+    let textoPlano = celdaTexto.innerText; 
+    const valorFolio = campoFolioHeader.value.trim();
+
+    if (textoHTML.includes("0000-000") && valorFolio !== "") {
+        textoHTML = textoHTML.replace(/0000-000/g, valorFolio);
+        textoPlano = textoPlano.replace(/0000-000/g, valorFolio);
+    }
+
+    try {
+        const contieneImagen = textoHTML.includes('<img');
+        if (contieneImagen) {
+            const type = "text/html";
+            const data = [new ClipboardItem({ 
+                [type]: new Blob([textoHTML], { type }), 
+                "text/plain": new Blob([textoPlano], { type: "text/plain" }) 
+            })];
+            await navigator.clipboard.write(data);
+        } else {
+            await navigator.clipboard.writeText(textoPlano);
+        }
+        
+        const textoOriginal = boton.innerText;
+        boton.innerText = "¡Copiado!";
+        boton.classList.add('copied');
+        fila.style.backgroundColor = document.body.classList.contains('light-mode') ? "rgba(4, 255, 109, 0.4)" : "rgba(62, 228, 112, 0.44)"; 
+
+        setTimeout(() => {
+            boton.innerText = textoOriginal;
+            boton.classList.remove('copied');
+            fila.style.backgroundColor = ""; 
+        }, 1500);
+    } catch (err) {
+        console.error('Error al copiar desde fila: ', err);
+        await navigator.clipboard.writeText(textoPlano).catch(e => console.error("Fallo definitivo: ", e));
+    }
+}
+
+window.copiarAlPortapapeles = async function(boton, event) {
+    if(event) event.stopPropagation();
+    // Reutiliza la misma lógica, emulando el clic en la fila
+    copiarDesdeFila(boton.closest('tr'), null);
+}
+
+// ==========================================================
+// 8. COPIADO DE CONTACTO Y FOLIO FIJO
+// ==========================================================
+const btnCopiarFolio = document.getElementById('btnCopiarFolio');
+if (btnCopiarFolio) {
+    btnCopiarFolio.addEventListener('click', async () => {
+        try {
+            let textoFinal = MENSAJE_LLAVE;
+            const valorFolio = campoFolioHeader.value.trim();
+            if (valorFolio !== "") textoFinal = textoFinal.replace(/0000-000/g, valorFolio);
+
+            await navigator.clipboard.writeText(textoFinal);
+            const textoOriginal = btnCopiarFolio.innerText;
+            btnCopiarFolio.innerText = "¡Copiado!";
+            btnCopiarFolio.classList.add('copied');
+            setTimeout(() => {
+                btnCopiarFolio.innerText = textoOriginal;
+                btnCopiarFolio.classList.remove('copied');
+            }, 1500);
+        } catch (err) {
+            console.error('Error al copiar folio: ', err);
+        }
+    });
+}
+
+function enmascararTelefono(tel) {
+    return tel.length === 10 ? tel.substring(0, 3) + "****" + tel.substring(7) : tel; 
+}
+
+function enmascararCorreo(correo) {
+    const partes = correo.split('@');
+    if (partes.length !== 2) return correo; 
+
+    const usuario = partes[0];
+    const dominio = partes[1];
+    let usuarioOculto = usuario;
+
+    if (usuario.length >= 6) usuarioOculto = usuario.substring(0, 3) + "****" + usuario.substring(usuario.length - 3);
+    else if (usuario.length >= 3) usuarioOculto = usuario.substring(0, 1) + "****" + usuario.substring(usuario.length - 1);
+    else usuarioOculto = "****";
+
+    return usuarioOculto + "@" + dominio;
+}
+
+const btnCopiarContacto = document.getElementById('btnCopiarContacto');
+const telefonoInput = document.getElementById('telefonoInput');
+const correoInput = document.getElementById('correoInput');
+
+if (btnCopiarContacto) {
+    btnCopiarContacto.addEventListener('click', async () => {
+        const telInput = telefonoInput.value.trim();
+        const emailInput = correoInput.value.trim();
+        let textoFinal = "";
+
+        const telOculto = telInput !== "" ? enmascararTelefono(telInput) : "";
+        const emailOculto = emailInput !== "" ? enmascararCorreo(emailInput) : "";
+
+        if (telInput !== "" && emailInput !== "") {
+            textoFinal = `En su Cuenta Llave se encuentran registrados los siguientes medios de contacto 😊, ¿Podría confirmarme si actualmente tiene acceso a ellos? 📩📱\nTeléfono: ${telOculto}\nCorreo: ${emailOculto}`;
+        } else if (telInput !== "" && emailInput === "") {
+            textoFinal = `En su Cuenta Llave, su correo electrónico se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al número celular que se encuentra registrado? 📱\nNúmero de celular: ${telOculto}`;
+        } else if (emailInput !== "" && telInput === "") {
+            textoFinal = `En su Cuenta Llave, su número celular se encuentra registrado correctamente 😊.\n¿Podría indicarme si tiene acceso al correo electrónico que se encuentra registrado? 📩\nCorreo: ${emailOculto}`;
+        } else {
+            return alert("Por favor, ingresa al menos el teléfono o el correo.");
+        }
+
+        try {
+            await navigator.clipboard.writeText(textoFinal);
+            const textoOriginal = btnCopiarContacto.innerText;
+            btnCopiarContacto.innerText = "¡Copiado!";
+            btnCopiarContacto.classList.add('copied');
+
+            telefonoInput.value = "";
+            correoInput.value = "";
+            setTimeout(() => {
+                btnCopiarContacto.innerText = textoOriginal;
+                btnCopiarContacto.classList.remove('copied');
+            }, 1500);
+        } catch (err) {
+            console.error('Error al copiar contacto: ', err);
+            alert("No se pudo copiar el texto.");
+        }
+    });
+}
+
+// ==========================================================
+// 9. MENÚ LATERAL Y CRUD DE HASHTAGS
 // ==========================================================
 const btnMenuDespedidas = document.getElementById('btnMenuDespedidas');
 const sideMenuDespedidas = document.getElementById('sideMenuDespedidas');
@@ -583,10 +479,6 @@ const hashtagButtonsContainer = document.getElementById('hashtagButtonsContainer
 const btnAgregarHashtag = document.getElementById('btnAgregarHashtag');
 const nuevoHashtagInput = document.getElementById('nuevoHashtagInput');
 
-const textoActivo = `Por último, nos encantaría conocer su experiencia con nuestro servicio a través de una breve encuesta de satisfacción:  https://forms.gle/iXN2fQZvXikwM6HTA 📊📈\nGracias por utilizar los servicios de *0311Locatel, le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
-const textoInactivo = `Debido a inactividad, el chat de *0311 LOCATEL finaliza su sesión, le recordamos que también podemos brindarle información a través de redes sociales, en Facebook como Locatel Ciudad de México y en Twitter como @locatel_mx o marcando al *0311 las 24 horas del día los 365 días del año, si desea realizar un reporte sobre servicios en la CDMX puede realizarlo por medio de https://311locatel.cdmx.gob.mx/ Le atendió JOSE GRANADOS. Hasta luego. #LAPALABRADELBOTON`;
-
-// --- READ: Cargar desde la colección catalogo_hashtags ---
 async function cargarHashtagsDesdeFirebase() {
     try {
         const querySnapshot = await getDocs(collection(db, "catalogo_hashtags"));
@@ -599,19 +491,16 @@ async function cargarHashtagsDesdeFirebase() {
         if(!listaHashtagsFirebase.some(h => h.nombre === "#INACTIVIDAD")) {
             listaHashtagsFirebase.unshift({ id: "estatico-inactividad", nombre: "#INACTIVIDAD" });
         }
-        
         renderHashtags(); 
     } catch (error) {
         console.error("Error al cargar hashtags del CRUD:", error);
     }
 }
 
-// --- CREATE: Agregar nuevo hashtag ---
 if (typeof btnAgregarHashtag !== 'undefined' && btnAgregarHashtag) {
     btnAgregarHashtag.addEventListener('click', async () => {
         let valor = nuevoHashtagInput.value.trim().toUpperCase();
         if(!valor) return;
-        
         if(!valor.startsWith('#')) valor = '#' + valor;
 
         btnAgregarHashtag.disabled = true;
@@ -631,7 +520,6 @@ if (typeof btnAgregarHashtag !== 'undefined' && btnAgregarHashtag) {
     });
 }
 
-// Abrir/Cerrar Menú
 if (btnMenuDespedidas && sideMenuDespedidas) {
     btnMenuDespedidas.addEventListener('click', () => {
         sideMenuDespedidas.classList.add('open');
@@ -644,10 +532,8 @@ if (closeMenuBtn) {
     });
 }
 
-// --- RENDERIZAR, UPDATE Y DELETE ---
 function renderHashtags(filtro = "") {
     hashtagButtonsContainer.innerHTML = "";
-    
     const filtrados = listaHashtagsFirebase.filter(h => h.nombre.toLowerCase().includes(filtro.toLowerCase()));
     
     if(filtrados.length === 0) {
@@ -697,7 +583,6 @@ function renderHashtags(filtro = "") {
         row.appendChild(btn);
 
         if (hashtagObj.id !== "estatico-inactividad") {
-            
             const btnEdit = document.createElement('button');
             btnEdit.className = 'theme-btn';
             btnEdit.innerHTML = '✏️';
@@ -709,7 +594,6 @@ function renderHashtags(filtro = "") {
                 if (nuevoNombre && nuevoNombre.trim() !== "") {
                     nuevoNombre = nuevoNombre.trim().toUpperCase();
                     if(!nuevoNombre.startsWith('#')) nuevoNombre = '#' + nuevoNombre;
-                    
                     try {
                         await updateDoc(doc(db, "catalogo_hashtags", hashtagObj.id), { nombre: nuevoNombre });
                         cargarHashtagsDesdeFirebase();
@@ -750,28 +634,7 @@ if (searchHashtag) {
 }
 
 // ==========================================================
-// MINIMIZAR / MAXIMIZAR FORMULARIO CRUD DE PLANTILLAS
-// ==========================================================
-const toggleCrudBtn = document.getElementById('toggleCrudBtn');
-const crudFormBody = document.getElementById('crudFormBody');
-const crudToggleIcon = document.getElementById('crudToggleIcon');
-
-if (toggleCrudBtn && crudFormBody) {
-    toggleCrudBtn.addEventListener('click', () => {
-        if (crudFormBody.style.display === 'none') {
-            crudFormBody.style.display = 'block';
-            crudToggleIcon.innerText = '▲'; // Cambia flecha hacia arriba
-            toggleCrudBtn.style.background = 'rgba(0,0,0,0.3)';
-        } else {
-            crudFormBody.style.display = 'none';
-            crudToggleIcon.innerText = '▼'; // Cambia flecha hacia abajo
-            toggleCrudBtn.style.background = 'rgba(0,0,0,0.15)';
-        }
-    });
-}
-
-// ==========================================================
-// ARRANQUE DEL PROGRAMA
+// 10. ARRANQUE DEL PROGRAMA
 // ==========================================================
 cargarDatos();
 obtenerHoraGuardada();
