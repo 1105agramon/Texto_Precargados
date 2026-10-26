@@ -242,7 +242,7 @@ header {
 .table-container {
     overflow-x: auto;
     flex-grow: 1;
-    max-height: calc(90vh - 180px);
+    max-height: 58vh;
     border-radius: 8px;
     border: 1px solid var(--border-color);
     background-color: var(--bg-color); 
@@ -251,7 +251,6 @@ header {
 table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Evita que las celdas se expandan de más */
 }
 
 thead th {
@@ -261,7 +260,7 @@ thead th {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    padding: 10px 14px;
+    padding: 10px 16px;
     text-align: left;
     position: sticky;
     top: 0;
@@ -283,25 +282,30 @@ tbody tr {
 }
 
 tbody td {
-    padding: 8px 14px; /* Filas delgadas y compactas */
+    padding: 10px 16px; /* Espaciado interno controlado para filas delgadas */
     border-bottom: 1px solid rgba(68, 71, 90, 0.4); 
     vertical-align: middle;
-    font-size: 12px; /* Letra pequeña pero totalmente legible */
+    font-size: 13px;
 }
 
 tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.1); }
 tbody tr:hover { background-color: var(--surface-hover); }
 
-tbody td:nth-child(1) { color: var(--primary-hover); font-weight: 700; }
+tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.1); }
+tbody tr:hover { background-color: var(--surface-hover); }
+
+tbody td:nth-child(1) { color: var(--primary-hover); font-weight: 700; white-space: nowrap; }
 tbody td:nth-child(2) { color: #f1fa8c; font-weight: 500; }
-tbody td:nth-child(3) { color: var(--info-color); font-style: italic; }
-tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New', monospace; font-weight: 700; }
+tbody td:nth-child(3) { color: var(--info-color); font-style: italic; white-space: nowrap; }
+tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New', monospace; font-weight: 700; text-align: center; white-space: nowrap; }
 
 .text-col {
     width: 100%;
     line-height: 1.4;
     color: var(--text-main);
-    max-height: 4.2em; /* Limita visualmente a aprox 3 líneas para que no crezca de más */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Muestra máximo 2 líneas como vista previa compacta */
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -319,8 +323,9 @@ tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New',
     background-color: var(--surface-hover) !important;
     border: 1px solid var(--primary-hover) !important;
     box-shadow: 0 0 10px rgba(255, 121, 198, 0.2), inset 3px 0 0 var(--primary-hover) !important;
-    padding: 6px !important; 
-    max-height: none !important;
+    padding: 8px !important; 
+    display: block !important;
+    -webkit-line-clamp: unset !important;
     overflow: visible !important;
     position: relative;
     z-index: 5;
