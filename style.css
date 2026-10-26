@@ -318,7 +318,7 @@ thead th {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 14px 16px;
+    padding: 8px 12px; /* Reducido para ahorrar espacio vertical */
     text-align: left;
     position: sticky;
     top: 0;
@@ -333,10 +333,10 @@ tbody tr {
 }
 
 tbody td {
-    padding: 14px 16px;
+    padding: 8px 12px; /* Espaciado interno mucho menor para filas delgadas */
     border-bottom: 1px solid rgba(68, 71, 90, 0.5); 
     vertical-align: middle;
-    font-size: 13px;
+    font-size: 12px; /* Letra más pequeña como solicitaste */
 }
 
 tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.15); }
@@ -349,40 +349,39 @@ tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New',
 
 .text-col {
     width: 100%;
-    line-height: 1.5;
+    line-height: 1.4;
     color: var(--text-main);
 }
 
 .center-col { text-align: center; white-space: nowrap; }
 
-/* Celda Editable Neón */
+/* Celda Editable Neón compacta */
 .editable-cell {
     cursor: text;
     transition: all 0.3s ease;
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 .editable-cell:focus {
     outline: none;
     background-color: var(--surface-hover) !important;
     border: 1px solid var(--primary-hover) !important;
-    box-shadow: 0 0 15px rgba(255, 121, 198, 0.2), inset 4px 0 0 var(--primary-hover) !important;
-    padding: 10px !important; 
+    box-shadow: 0 0 10px rgba(255, 121, 198, 0.2), inset 3px 0 0 var(--primary-hover) !important;
+    padding: 6px !important; 
     position: relative;
     z-index: 5;
 }
-
 /* ==========================================================
    6. BOTONES DE ACCIÓN (COPIAR Y SCROLL)
    ========================================================== */
 button.copy-btn {
     background-color: transparent;
     color: var(--primary-color);
-    border: 1.5px solid var(--border-color);
-    padding: 6px 12px;
-    border-radius: 6px;
+    border: 1.2px solid var(--border-color);
+    padding: 4px 8px; /* Botones más compactos */
+    border-radius: 4px;
     font-family: inherit;
-    font-size: 12px;
+    font-size: 11px; /* Letra del botón más pequeña */
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
