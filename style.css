@@ -294,7 +294,7 @@ thead th:nth-child(2) { width: 15%; } /* Subtema */
 thead th:nth-child(3) { width: 11%; } /* Categoría */
 thead th:nth-child(4) { width: 32%; } /* Texto de Respuesta */
 thead th:nth-child(5) { width: 14%; } /* Hashtag */
-thead th:nth-child(6) { width: 16%; text-align: center; } /* Acción */
+thead th:nth-child(6) { width: 19%; text-align: center; } /* Acción */
 
 tbody tr {
     height: 48px; /* Altura fija para todas las filas */
