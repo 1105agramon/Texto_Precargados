@@ -251,10 +251,10 @@ header {
 }
 
 /* ==========================================================
-   5. TABLA COMPACTA Y ESTILIZADA
+   5. TABLA COMPACTA Y CON SCROLL HORIZONTAL FLUIDO
    ========================================================== */
 .table-container {
-    overflow-x: auto;
+    overflow-x: auto; /* Activa el scroll horizontal cuando sea necesario */
     flex-grow: 1;
     max-height: 58vh;
     border-radius: 8px;
@@ -264,35 +264,33 @@ header {
 
 table {
     width: 100%;
+    min-width: 1000px; /* Ancho mínimo para garantizar que las columnas respiren y no se amontonen */
     border-collapse: collapse;
-    table-layout: fixed; 
 }
 
 thead th {
     background-color: var(--input-bg);
     color: var(--primary-color); 
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 8px 10px;
+    padding: 10px 12px;
     text-align: left;
     position: sticky;
     top: 0;
     z-index: 10;
     border-bottom: 2px solid var(--border-color);
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-/* Anchos proporcionales de columnas */
-thead th:nth-child(1), tbody td:nth-child(1) { width: 13%; } /* Tema */
-thead th:nth-child(2), tbody td:nth-child(2) { width: 16%; } /* Subtema */
-thead th:nth-child(3), tbody td:nth-child(3) { width: 12%; } /* Categoría */
-thead th:nth-child(4), tbody td:nth-child(4) { width: 29%; } /* Texto de Respuesta */
-thead th:nth-child(5), tbody td:nth-child(5) { width: 13%; } /* Hashtag */
-thead th:nth-child(6), tbody td:nth-child(6) { width: 17%; text-align: center; } /* Acción */
+/* Anchos fijos ideales para cada columna */
+thead th:nth-child(1), tbody td:nth-child(1) { width: 130px; } /* Tema */
+thead th:nth-child(2), tbody td:nth-child(2) { width: 160px; } /* Subtema */
+thead th:nth-child(3), tbody td:nth-child(3) { width: 120px; } /* Categoría */
+thead th:nth-child(4), tbody td:nth-child(4) { width: 340px; } /* Texto de Respuesta */
+thead th:nth-child(5), tbody td:nth-child(5) { width: 130px; } /* Hashtag */
+thead th:nth-child(6), tbody td:nth-child(6) { width: 170px; text-align: center; } /* Acción */
 
 tbody tr {
     animation: fadeInUp 0.3s ease forwards;
@@ -300,13 +298,13 @@ tbody tr {
 }
 
 tbody td {
-    padding: 8px 10px; 
+    padding: 8px 12px; 
     border-bottom: 1px solid rgba(68, 71, 90, 0.4); 
     vertical-align: middle;
     font-size: 9.5px; /* Tamaño de letra de la tabla a 9.5px */
     word-break: break-word;
     overflow-wrap: break-word;
-    white-space: normal; /* Permite saltos de línea automáticos en todas las celdas */
+    white-space: normal; 
 }
 
 tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.1); }
@@ -343,7 +341,6 @@ tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New',
     z-index: 5;
 }
 
-/* Alineación y visibilidad perfecta de los botones de acción */
 tbody td:nth-child(6) {
     white-space: nowrap;
     text-align: center;
