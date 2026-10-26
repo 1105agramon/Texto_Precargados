@@ -297,7 +297,7 @@ tbody td {
     padding: 6px 10px; /* Filas delgadas y compactas */
     border-bottom: 1px solid rgba(68, 71, 90, 0.4); 
     vertical-align: middle;
-    font-size: 11.5px; /* Letra pequeña y limpia */
+    font-size: 9.5px; /* Letra pequeña y limpia */
     overflow: hidden;
     text-overflow: ellipsis;
 }
