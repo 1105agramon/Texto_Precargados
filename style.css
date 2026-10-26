@@ -239,6 +239,9 @@ header {
 /* ==========================================================
    5. TABLA COMPACTA Y ESTILIZADA
    ========================================================== */
+/* ==========================================================
+   CONTENEDOR Y DISEÑO DE LA TABLA (COMPACTA Y PROPORCIONAL)
+   ========================================================== */
 .table-container {
     overflow-x: auto;
     flex-grow: 1;
@@ -251,30 +254,42 @@ header {
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed; /* Fuerza a respetar los anchos definidos por columna */
 }
 
 thead th {
     background-color: var(--input-bg);
     color: var(--primary-color); 
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    padding: 10px 16px;
+    letter-spacing: 0.5px;
+    padding: 8px 10px;
     text-align: left;
     position: sticky;
     top: 0;
     z-index: 10;
     border-bottom: 2px solid var(--border-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Anchos fijos y proporcionales para cada columna */
-thead th:nth-child(1), tbody td:nth-child(1) { width: 14%; }
-thead th:nth-child(2), tbody td:nth-child(2) { width: 15%; }
-thead th:nth-child(3), tbody td:nth-child(3) { width: 13%; }
-thead th:nth-child(4), tbody td:nth-child(4) { width: 35%; }
-thead th:nth-child(5), tbody td:nth-child(5) { width: 12%; text-align: center; }
-thead th:nth-child(6), tbody td:nth-child(6) { width: 11%; text-align: center; }
+/* ==========================================================
+   ANCHOS Y ALINEACIÓN DE COLUMNAS
+   ========================================================== */
+/* 1. Tema (Pequeña) */
+thead th:nth-child(1), tbody td:nth-child(1) { width: 12%; }
+/* 2. Subtema (Mediana) */
+thead th:nth-child(2), tbody td:nth-child(2) { width: 14%; }
+/* 3. Categoría (Pequeña) */
+thead th:nth-child(3), tbody td:nth-child(3) { width: 12%; }
+/* 4. Texto de Respuesta (Amplio y controlado) */
+thead th:nth-child(4), tbody td:nth-child(4) { width: 34%; }
+/* 5. Hashtag (Más pequeño, alineado a la izquierda para evitar desbordes) */
+thead th:nth-child(5), tbody td:nth-child(5) { width: 16%; text-align: left; }
+/* 6. Acción (Botones) */
+thead th:nth-child(6), tbody td:nth-child(6) { width: 12%; text-align: center; }
 
 tbody tr {
     animation: fadeInUp 0.3s ease forwards;
@@ -282,35 +297,34 @@ tbody tr {
 }
 
 tbody td {
-    padding: 10px 16px; /* Espaciado interno controlado para filas delgadas */
+    padding: 8px 10px; /* Filas delgadas */
     border-bottom: 1px solid rgba(68, 71, 90, 0.4); 
     vertical-align: middle;
-    font-size: 13px;
+    font-size: 11.5px; /* Letras un poco más pequeñas */
+    word-break: break-word; /* Evita que palabras grandes rompan el diseño */
+    overflow-wrap: break-word;
 }
 
 tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.1); }
 tbody tr:hover { background-color: var(--surface-hover); }
 
-tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.1); }
-tbody tr:hover { background-color: var(--surface-hover); }
-
-tbody td:nth-child(1) { color: var(--primary-hover); font-weight: 700; white-space: nowrap; }
+tbody td:nth-child(1) { color: var(--primary-hover); font-weight: 700; }
 tbody td:nth-child(2) { color: #f1fa8c; font-weight: 500; }
-tbody td:nth-child(3) { color: var(--info-color); font-style: italic; white-space: nowrap; }
-tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New', monospace; font-weight: 700; text-align: center; white-space: nowrap; }
+tbody td:nth-child(3) { color: var(--info-color); font-style: italic; }
+tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New', monospace; font-weight: 700; text-align: left; }
 
 .text-col {
     width: 100%;
-    line-height: 1.4;
+    line-height: 1.35;
     color: var(--text-main);
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Muestra máximo 2 líneas como vista previa compacta */
-    -webkit-box-orient: vertical;
+    white-space: pre-wrap !important;
+    word-break: break-word;
+    max-height: 3.8em; /* Limita visualmente el alto para mantener filas uniformes */
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.center-col { text-align: center; }
+.center-col { text-align: center; white-space: nowrap; }
 
 /* Celda Editable Neón Compacta */
 .editable-cell {
@@ -323,9 +337,8 @@ tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New',
     background-color: var(--surface-hover) !important;
     border: 1px solid var(--primary-hover) !important;
     box-shadow: 0 0 10px rgba(255, 121, 198, 0.2), inset 3px 0 0 var(--primary-hover) !important;
-    padding: 8px !important; 
-    display: block !important;
-    -webkit-line-clamp: unset !important;
+    padding: 6px !important; 
+    max-height: none !important;
     overflow: visible !important;
     position: relative;
     z-index: 5;
