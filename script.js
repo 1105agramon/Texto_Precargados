@@ -114,18 +114,24 @@ if (toggleCrudBtn && crudFormBody) {
 }
 
 // ==========================================================
-// 4. MÓDULO: HORA DE COMIDA
+// 4. MÓDULO: HORA DE COMIDA (REGISTRO ÚNICO RECICLABLE)
 // ==========================================================
 const btnGuardarHora = document.getElementById('btnGuardarHora');
 const horaInput = document.getElementById('horaInput');
+let idDocumentoComida = null; // Guarda el ID del documento existente para reciclarlo
 
 async function obtenerHoraGuardada() {
     if (!horaInput) return;
     try {
-        const docRef = doc(db, "registro_comidas", getHoyId());
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().hora_comida) {
-            horaInput.value = docSnap.data().hora_comida;
+        const querySnapshot = await getDocs(collection(db, "registro_comidas"));
+        if (!querySnapshot.empty) {
+            // Tomamos el primer documento que ya se encuentre registrado
+            const docExistente = querySnapshot.docs[0];
+            idDocumentoComida = docExistente.id;
+            
+            if (docExistente.data().hora_comida) {
+                horaInput.value = docExistente.data().hora_comida;
+            }
         }
     } catch (error) {
         console.error("Error al leer la hora:", error);
@@ -141,7 +147,19 @@ if (btnGuardarHora) {
         btnGuardarHora.innerText = "⏳";
 
         try {
-            await setDoc(doc(db, "registro_comidas", getHoyId()), {
+            // Si aún no tenemos el ID en memoria, verificamos si hay uno en la BD
+            if (!idDocumentoComida) {
+                const querySnapshot = await getDocs(collection(db, "registro_comidas"));
+                if (!querySnapshot.empty) {
+                    idDocumentoComida = querySnapshot.docs[0].id;
+                } else {
+                    // Si no hay nada en la BD, se define un ID único por primera vez
+                    idDocumentoComida = "hora_actual";
+                }
+            }
+
+            // Sobrescribe siempre el mismo documento sin generar nuevos por día
+            await setDoc(doc(db, "registro_comidas", idDocumentoComida), {
                 fecha: getHoyId(),
                 hora_comida: horaValor
             }, { merge: true });
@@ -542,17 +560,33 @@ if (typeof btnAgregarHashtag !== 'undefined' && btnAgregarHashtag) {
     });
 }
 
+// Abrir Menú
 if (btnMenuDespedidas && sideMenuDespedidas) {
-    btnMenuDespedidas.addEventListener('click', () => {
+    btnMenuDespedidas.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita que el clic de apertura sea detectado como clic fuera
         sideMenuDespedidas.classList.add('open');
         cargarHashtagsDesdeFirebase(); 
     });
 }
+
+// Cerrar Menú con el botón X
 if (closeMenuBtn) {
     closeMenuBtn.addEventListener('click', () => {
         sideMenuDespedidas.classList.remove('open');
     });
 }
+
+// Cerrar Menú al hacer clic fuera de la sección
+document.addEventListener('click', (e) => {
+    if (sideMenuDespedidas && sideMenuDespedidas.classList.contains('open')) {
+        const clicDentroDelMenu = sideMenuDespedidas.contains(e.target) || e.composedPath().includes(sideMenuDespedidas);
+        const clicEnBotonAbrir = btnMenuDespedidas && btnMenuDespedidas.contains(e.target);
+
+        if (!clicDentroDelMenu && !clicEnBotonAbrir) {
+            sideMenuDespedidas.classList.remove('open');
+        }
+    }
+});
 
 function renderHashtags(filtro = "") {
     hashtagButtonsContainer.innerHTML = "";
