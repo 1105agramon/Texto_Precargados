@@ -289,17 +289,22 @@ thead th:nth-child(5), tbody td:nth-child(5) { width: 14%; word-break: break-all
 thead th:nth-child(6), tbody td:nth-child(6) { width: 18%; text-align: center; } /* Acción (Espacio suficiente para los 3 botones) */
 
 tbody tr {
+    height: 44px; /* Altura fija estricta para todas las filas */
+    max-height: 44px;
     animation: fadeInUp 0.3s ease forwards;
     opacity: 0;
 }
 
 tbody td {
-    padding: 6px 10px; /* Filas delgadas y compactas */
+    height: 44px; /* Forzar el alto de la celda */
+    max-height: 44px;
+    padding: 6px 10px; 
     border-bottom: 1px solid rgba(68, 71, 90, 0.4); 
     vertical-align: middle;
-    font-size: 9.5px; /* Letra pequeña y limpia */
+    font-size: 9.5px; 
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap; /* Mantiene una sola línea uniforme en las columnas estándar */
 }
 
 tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.1); }
@@ -316,7 +321,7 @@ tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New',
     line-height: 1.35;
     color: var(--text-main);
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Vista previa de máximo 2 líneas para mantener filas uniformes */
+    -webkit-line-clamp: 3; /* Vista previa de máximo 2 líneas para mantener filas uniformes */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -343,10 +348,10 @@ tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New',
     z-index: 5;
 }
 
-/* Ajuste fino para los botones de acción y evitar que se encimen */
-tbody td:nth-child(6) button {
-    padding: 4px 6px !important;
-    font-size: 11px !important;
+/* Alineación y tamaño de los botones de acción */
+tbody td:nth-child(6) {
+    white-space: nowrap;
+    text-align: center;
 }
 
 /* ==========================================================
