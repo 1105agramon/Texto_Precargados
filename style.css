@@ -1,5 +1,5 @@
 /* ==========================================================
-   1. PALETA DE COLORES "DRACULA OFFICIAL" (TEMA OSCURO DEFAULT)
+   1. PALETA DE COLORES "DRACULA OFFICIAL"
    ========================================================== */
 :root {
     --bg-color: #282a36;        
@@ -119,7 +119,7 @@ header {
 }
 
 /* ==========================================================
-   4. CONTROLES SUPERIORES (FLUIDOS Y SIN DESBORDES)
+   4. CONTROLES SUPERIORES (FLUIDOS Y RESPONSIVE)
    ========================================================== */
 .controls-container {
     display: flex;
@@ -205,14 +205,16 @@ header {
 
 .copy-folio-btn:hover { background-color: var(--primary-hover); }
 
+/* Caja de contacto adaptativa para que el botón no quede fuera */
 .contact-box {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
     flex: 1 1 320px;
 }
 
 .contact-field {
-    flex: 1;
+    flex: 1 1 110px;
     min-width: 110px;
     padding: 10px;
     font-size: 13px;
@@ -232,15 +234,25 @@ header {
     font-weight: 800;
     cursor: pointer;
     white-space: nowrap; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
 }
 
 .copy-contact-btn:hover { background-color: var(--primary-hover); }
 
+@media (max-width: 1200px) {
+    .contact-box {
+        flex: 1 1 100%;
+    }
+    .copy-contact-btn {
+        flex: 1 1 100%;
+    }
+}
+
 /* ==========================================================
    5. TABLA COMPACTA Y ESTILIZADA
-   ========================================================== */
-/* ==========================================================
-   CONTENEDOR Y DISEÑO DE LA TABLA (COMPACTA Y PROPORCIONAL)
    ========================================================== */
 .table-container {
     overflow-x: auto;
@@ -254,7 +266,7 @@ header {
 table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Fuerza a respetar los anchos definidos por columna */
+    table-layout: fixed; 
 }
 
 thead th {
@@ -275,36 +287,31 @@ thead th {
     text-overflow: ellipsis;
 }
 
-/* ==========================================================
-   ANCHOS Y ALINEACIÓN DE COLUMNAS
-   ========================================================== */
-/* ==========================================================
-   ANCHOS EXACTOS DE COLUMNAS (Suman 100% para evitar scroll horizontal)
-   ========================================================== */
-thead th:nth-child(1), tbody td:nth-child(1) { width: 12%; } /* Tema */
-thead th:nth-child(2), tbody td:nth-child(2) { width: 15%; } /* Subtema */
-thead th:nth-child(3), tbody td:nth-child(3) { width: 11%; } /* Categoría */
-thead th:nth-child(4), tbody td:nth-child(4) { width: 30%; } /* Texto de Respuesta */
-thead th:nth-child(5), tbody td:nth-child(5) { width: 14%; word-break: break-all; } /* Hashtag (con salto automático) */
-thead th:nth-child(6), tbody td:nth-child(6) { width: 18%; text-align: center; } /* Acción (Espacio suficiente para los 3 botones) */
+/* Anchos de columnas proporcionales */
+thead th:nth-child(1), tbody td:nth-child(1) { width: 12%; } 
+thead th:nth-child(2), tbody td:nth-child(2) { width: 15%; } 
+thead th:nth-child(3), tbody td:nth-child(3) { width: 11%; } 
+thead th:nth-child(4), tbody td:nth-child(4) { width: 30%; } 
+thead th:nth-child(5), tbody td:nth-child(5) { width: 14%; word-break: break-all; } 
+thead th:nth-child(6), tbody td:nth-child(6) { width: 18%; text-align: center; } 
 
 tbody tr {
-    height: 44px; /* Altura fija estricta para todas las filas */
-    max-height: 44px;
+    height: 40px; 
+    max-height: 40px;
     animation: fadeInUp 0.3s ease forwards;
     opacity: 0;
 }
 
 tbody td {
-    height: 44px; /* Forzar el alto de la celda */
-    max-height: 44px;
-    padding: 6px 10px; 
+    height: 40px; 
+    max-height: 40px;
+    padding: 4px 8px; 
     border-bottom: 1px solid rgba(68, 71, 90, 0.4); 
     vertical-align: middle;
-    font-size: 9.5px; 
+    font-size: 9.5px; /* Tamaño de letra de la tabla solicitado a 9.5px */
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* Mantiene una sola línea uniforme en las columnas estándar */
+    white-space: nowrap; 
 }
 
 tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.1); }
@@ -315,13 +322,12 @@ tbody td:nth-child(2) { color: #f1fa8c; font-weight: 500; }
 tbody td:nth-child(3) { color: var(--info-color); font-style: italic; }
 tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New', monospace; font-weight: 700; }
 
-
 .text-col {
     width: 100%;
-    line-height: 1.35;
+    line-height: 1.3;
     color: var(--text-main);
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* Vista previa de máximo 2 líneas para mantener filas uniformes */
+    -webkit-line-clamp: 2; 
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -341,14 +347,13 @@ tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New',
     background-color: var(--surface-hover) !important;
     border: 1px solid var(--primary-hover) !important;
     box-shadow: 0 0 10px rgba(255, 121, 198, 0.2), inset 3px 0 0 var(--primary-hover) !important;
-    padding: 6px !important; 
+    padding: 4px !important; 
     max-height: none !important;
     overflow: visible !important;
     position: relative;
     z-index: 5;
 }
 
-/* Alineación y tamaño de los botones de acción */
 tbody td:nth-child(6) {
     white-space: nowrap;
     text-align: center;
@@ -361,10 +366,10 @@ button.copy-btn {
     background-color: transparent;
     color: var(--primary-color);
     border: 1.2px solid var(--border-color);
-    padding: 4px 10px; 
+    padding: 3px 8px; 
     border-radius: 5px;
     font-family: inherit;
-    font-size: 11px; 
+    font-size: 10px; 
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -413,7 +418,7 @@ button.copy-btn.copied {
     text-align: center;
     color: var(--text-muted);
     padding: 30px !important;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .loader {
