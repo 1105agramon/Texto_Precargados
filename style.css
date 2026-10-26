@@ -278,18 +278,15 @@ thead th {
 /* ==========================================================
    ANCHOS Y ALINEACIÓN DE COLUMNAS
    ========================================================== */
-/* 1. Tema (Pequeña) */
-thead th:nth-child(1), tbody td:nth-child(1) { width: 12%; }
-/* 2. Subtema (Mediana) */
-thead th:nth-child(2), tbody td:nth-child(2) { width: 14%; }
-/* 3. Categoría (Pequeña) */
-thead th:nth-child(3), tbody td:nth-child(3) { width: 12%; }
-/* 4. Texto de Respuesta (Amplio y controlado) */
-thead th:nth-child(4), tbody td:nth-child(4) { width: 34%; }
-/* 5. Hashtag (Más pequeño, alineado a la izquierda para evitar desbordes) */
-thead th:nth-child(5), tbody td:nth-child(5) { width: 16%; text-align: left; }
-/* 6. Acción (Botones) */
-thead th:nth-child(6), tbody td:nth-child(6) { width: 12%; text-align: center; }
+/* ==========================================================
+   ANCHOS EXACTOS DE COLUMNAS (Suman 100% para evitar scroll horizontal)
+   ========================================================== */
+thead th:nth-child(1), tbody td:nth-child(1) { width: 12%; } /* Tema */
+thead th:nth-child(2), tbody td:nth-child(2) { width: 15%; } /* Subtema */
+thead th:nth-child(3), tbody td:nth-child(3) { width: 11%; } /* Categoría */
+thead th:nth-child(4), tbody td:nth-child(4) { width: 30%; } /* Texto de Respuesta */
+thead th:nth-child(5), tbody td:nth-child(5) { width: 14%; word-break: break-all; } /* Hashtag (con salto automático) */
+thead th:nth-child(6), tbody td:nth-child(6) { width: 18%; text-align: center; } /* Acción (Espacio suficiente para los 3 botones) */
 
 tbody tr {
     animation: fadeInUp 0.3s ease forwards;
@@ -297,12 +294,12 @@ tbody tr {
 }
 
 tbody td {
-    padding: 8px 10px; /* Filas delgadas */
+    padding: 6px 10px; /* Filas delgadas y compactas */
     border-bottom: 1px solid rgba(68, 71, 90, 0.4); 
     vertical-align: middle;
-    font-size: 11.5px; /* Letras un poco más pequeñas */
-    word-break: break-word; /* Evita que palabras grandes rompan el diseño */
-    overflow-wrap: break-word;
+    font-size: 11.5px; /* Letra pequeña y limpia */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 tbody tr:nth-child(even) { background-color: rgba(68, 71, 90, 0.1); }
@@ -311,17 +308,19 @@ tbody tr:hover { background-color: var(--surface-hover); }
 tbody td:nth-child(1) { color: var(--primary-hover); font-weight: 700; }
 tbody td:nth-child(2) { color: #f1fa8c; font-weight: 500; }
 tbody td:nth-child(3) { color: var(--info-color); font-style: italic; }
-tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New', monospace; font-weight: 700; text-align: left; }
+tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New', monospace; font-weight: 700; }
+
 
 .text-col {
     width: 100%;
     line-height: 1.35;
     color: var(--text-main);
-    white-space: pre-wrap !important;
-    word-break: break-word;
-    max-height: 3.8em; /* Limita visualmente el alto para mantener filas uniformes */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Vista previa de máximo 2 líneas para mantener filas uniformes */
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: normal !important;
 }
 
 .center-col { text-align: center; white-space: nowrap; }
@@ -342,6 +341,12 @@ tbody td:nth-child(5) { color: var(--success-color); font-family: 'Courier New',
     overflow: visible !important;
     position: relative;
     z-index: 5;
+}
+
+/* Ajuste fino para los botones de acción y evitar que se encimen */
+tbody td:nth-child(6) button {
+    padding: 4px 6px !important;
+    font-size: 11px !important;
 }
 
 /* ==========================================================
